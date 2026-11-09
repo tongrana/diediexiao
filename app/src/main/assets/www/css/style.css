@@ -253,11 +253,18 @@ button, input, select, textarea {
 .btn-note { font-size: var(--fs-cap); font-weight: 500; }
 
 .btn-icon {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   width: 44px;
   height: 44px;
   min-width: 44px;
+  padding: 0 !important;
+  font-size: 1.35em;
+  font-weight: 900;
+  line-height: 1;
+  text-indent: 0;
   border: 1px solid var(--line);
   border-radius: 50%;
   background: var(--card);
@@ -755,6 +762,22 @@ button, input, select, textarea {
   font-size: var(--fs-cap);
   color: var(--ink-3);
   line-height: 1.55;
+}
+
+.sheet-narrow { max-width: 340px; }
+
+.sheet-actions-row {
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.sheet-actions-row .btn { flex: 1 1 0; min-width: 0; }
+
+.buy-warn { color: #b34a63; font-weight: 700; }
+
+#ov-pause .sheet-title,
+#ov-buy .sheet-title {
+  text-align: center;
 }
 
 .sheet-actions {
@@ -1600,10 +1623,10 @@ input[type="range"]::-moz-range-thumb {
   border-radius: var(--r-md);
 }
 
-/* 失败时顺序：复活卡 → 返回主界面 → 重新开始 */
-.result-actions.is-fail #btn-revive { order: 1; }
-.result-actions.is-fail #btn-result-quit { order: 2; }
-.result-actions.is-fail #btn-result-primary { order: 3; }
+/* 统一顺序：左「返回主界面」→ 中「复活」→ 右「下一关/重新开始」 */
+.result-actions #btn-result-quit { order: 1; }
+.result-actions #btn-revive { order: 2; }
+.result-actions #btn-result-primary { order: 3; }
 
 .rev-btn {
   position: relative;
@@ -1614,6 +1637,11 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .rev-btn .rev-icon { margin-right: 0.15em; }
+
+.rev-btn.used {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
 
 .rev-btn .prop-count {
   top: -7px;

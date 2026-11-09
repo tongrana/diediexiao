@@ -792,6 +792,7 @@
     /** 失败后复活：回到游戏中，补时；星级上限不变（用了就算用过加时） */
     state.revive = function (extraSec) {
       if (state.status !== 'lost') return { ok: false, reason: 'status' };
+      if (state.usedRevive) return { ok: false, reason: 'used' };
       state.status = 'playing';
       state.timeLeft += (extraSec || 30);
       state.usedAddTime = true;

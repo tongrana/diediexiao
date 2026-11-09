@@ -17,7 +17,7 @@
   const LEVEL_COUNT = Levels.mainLevelCount();
 
   const DEFAULT_PROGRESS = { unlocked: 1, levels: {} };
-  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, volume: 1.4, debug: false };
+  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, volume: 1.15, debug: false };
   const DEFAULT_STATS = { plays: 0, wins: 0, totalClearMs: 0, bestCombo: 0 };
   const DEFAULT_WALLET = {
     coins: 0,
@@ -926,6 +926,25 @@
     'unsolvable': '这次洗牌无效，未消耗次数'
   };
 
+  let buyKind = null;
+
+  /** 打开「购买道具」确认框 */
+  function openBuy(kind) {
+    const item = Levels.SHOP_ITEMS.filter(function (it) { return it.id === kind; })[0];
+    if (!item) return;
+    buyKind = kind;
+    const coins = S.wallet.coins || 0;
+    const enough = S.settings.debug || coins >= item.price;
+    $('#buy-title').textContent = '购买「' + item.name + '」';
+    $('#buy-desc').innerHTML =
+      '需要 <b>' + item.price + '</b> 金币 · 当前 <b>' + coins + '</b> 金币' +
+      (enough ? '' : '<br><span class="buy-warn">金币不够，去闯关赚一些吧</span>');
+    const okBtn = $('#btn-buy-ok');
+    okBtn.disabled = !enough;
+    openOverlay('ov-buy');
+    A.click();
+  }
+
   function useProp(name) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
@@ -936,6 +955,10 @@
     else r = g.addTime();
 
     if (!r.ok) {
+      if (r.reason === 'no-props' && Levels.SHOP_ITEMS.some(function (it) { return it.id === name; })) {
+        openBuy(name);       // 没道具了：直接弹购买
+        return;
+      }
       A.deny();
       toast(PROP_FAIL[r.reason] || '暂时不可用');
       return;
@@ -971,6 +994,7 @@
     const g = S.game;
     if (!g) return;
     if (g.pause()) {
+      try { A.suspend(); } catch (e) { /* ignore */ }
       openOverlay('ov-pause');
       haptic(6);
     }
@@ -980,6 +1004,7 @@
     const g = S.game;
     if (!g) return;
     g.resume();
+    try { A.resume(); } catch (e) { /* ignore */ }
     closeOverlay('ov-pause');
     S.lastT = performance.now();
   }
@@ -1090,7 +1115,6 @@
     }
 
     const primary = $('#btn-result-primary');
-    const secondary = $('#btn-result-secondary');
     const canNext = r.won && !custom && S.meta.level < LEVEL_COUNT;
     // 失败时给一个明确的「重新开始」入口
     const rev = $('#btn-revive');
@@ -1101,11 +1125,13 @@
       acts.classList.toggle('is-fail', !!canRevive);
       const rc = $('#revive-count');
       if (rc) rc.textContent = S.settings.debug ? '∞' : String(S.wallet.items.revive || 0);
+      const used = !!(g && g.usedRevive);
+      rev.classList.toggle('used', used);
+      rev.title = used ? '本局已用过复活卡' : '';
     }
     primary.textContent = canNext ? '下一关' : '重新开始';
     primary.dataset.action = canNext ? 'next' : 'again';
-    secondary.textContent = '再来一次';
-    secondary.hidden = !canNext;
+    if (acts) acts.classList.toggle('is-win', !!r.won);
 
     openOverlay('ov-result');
   }
@@ -1166,7 +1192,7 @@
     $('#set-debug').checked = !!S.settings.debug;
     $('#set-fontscale').value = String(S.settings.fontScale || 1);
     if ($('#set-volume')) {
-      const vol = S.settings.volume == null ? 1.4 : S.settings.volume;
+      const vol = S.settings.volume == null ? 1.15 : S.settings.volume;
       $('#set-volume').value = String(Math.round(vol * 100));
       if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round(vol * 100) + '%';
     }
@@ -1177,10 +1203,10 @@
   function applySettings() {
     if (A && A.setEnabled) A.setEnabled(!!S.settings.sfx);
     if (A && A.setMusicEnabled) A.setMusicEnabled(!!S.settings.music);
-    if (A && A.setVolume) A.setVolume(S.settings.volume == null ? 1.4 : S.settings.volume);
+    if (A && A.setVolume) A.setVolume(S.settings.volume == null ? 1.15 : S.settings.volume);
     if ($('#set-volume')) {
-      $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.4 : S.settings.volume) * 100));
-      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.4 : S.settings.volume) * 100) + '%';
+      $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100));
+      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100) + '%';
     }
     app.classList.toggle('reduced-motion', !S.settings.motion);
     $('#set-sfx').checked = !!S.settings.sfx;
@@ -1224,18 +1250,8 @@
       goScreen('settings');
     });
     $('#btn-restart').addEventListener('click', restartCurrent);
-    $('#btn-quit').addEventListener('click', function () {
-      closeAllOverlays();
-      stopLoop();
-      syncStock();
-      S.game = null;
-      goScreen('levels');
-    });
     $('#btn-home').addEventListener('click', function () {
-      closeAllOverlays();
-      stopLoop();
-      syncStock();
-      S.game = null;
+      leaveGame();
       goScreen('home');
     });
 
@@ -1244,7 +1260,6 @@
       if (action === 'next') nextLevelStart();
       else restartCurrent();
     });
-    $('#btn-result-secondary').addEventListener('click', restartCurrent);
 
     $('#btn-revive').addEventListener('click', function () {
       const g = S.game;
@@ -1257,7 +1272,11 @@
         S.wallet.items.revive -= 1;
         persistWallet();
       }
-      g.revive(30);
+      const rv = g.revive(30);
+      if (!rv.ok) {
+        toast(rv.reason === 'used' ? '本局已经用过复活卡了' : '现在不能复活');
+        return;
+      }
       S.result = null;
       closeOverlay('ov-result');
       updateHUD(true);
@@ -1351,7 +1370,12 @@
     }
 
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden && S.game && S.game.status === 'playing') pauseGame();
+      if (document.hidden) {
+      try { A.suspend(); } catch (e) { /* ignore */ }   // 切后台先静音，音乐不再响
+      if (S.game && S.game.status === 'playing' && S.screen === 'game') pauseGame();
+    } else if (S.screen === 'game' && S.game && S.game.status === 'playing') {
+      try { A.resume(); } catch (e) { /* ignore */ }
+    }
     });
 
     document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
@@ -1367,6 +1391,28 @@
       if (e.key === '2') useProp('shuffle');
       if (e.key === '3') useProp('hint');
       if (e.key === '4') useProp('addTime');
+    });
+
+    $('#btn-buy-cancel').addEventListener('click', function () {
+      closeOverlay('ov-buy');
+      buyKind = null;
+    });
+    $('#btn-buy-ok').addEventListener('click', function () {
+      const kind = buyKind;
+      buyKind = null;
+      closeOverlay('ov-buy');
+      if (!kind) return;
+      const item = Levels.SHOP_ITEMS.filter(function (it) { return it.id === kind; })[0];
+      if (!item) return;
+      if (!S.settings.debug && (S.wallet.coins || 0) < item.price) { toast('金币不够'); return; }
+      if (!S.settings.debug) {
+        S.wallet.coins -= item.price;
+        S.wallet.items[kind] = (S.wallet.items[kind] || 0) + 1;
+      }
+      persistWallet();
+      toast('已购买「' + item.name + '」');
+      A.prop();
+      setTimeout(function () { useProp(kind); }, 60);
     });
 
     // 点浮层空白处关闭（暂停面板视作「继续」）

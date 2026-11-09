@@ -304,7 +304,7 @@
 
       <button class="btn btn-ghost btn-sm" id="btn-reset-data2">清除所有数据</button>
       <p class="hint-text">游戏进度、自定义关卡都存在本机浏览器里</p>
-      <p class="hint-text" id="version-note">v1.3 · 2026-11-09 · 纯本地运行</p>
+      <p class="hint-text" id="version-note">v1.4 · 2026-11-09 · 纯本地运行</p>
     </div>
   </section>
 
@@ -318,6 +318,17 @@
     </div>
   </div>
 
+  <div class="overlay" id="ov-buy" hidden>
+    <div class="sheet sheet-narrow">
+      <h3 class="sheet-title" id="buy-title">购买道具</h3>
+      <p class="sheet-sub" id="buy-desc"></p>
+      <div class="sheet-actions sheet-actions-row">
+        <button class="btn btn-ghost" id="btn-buy-cancel">取消</button>
+        <button class="btn btn-primary" id="btn-buy-ok">购买并使用</button>
+      </div>
+    </div>
+  </div>
+
   <div class="overlay" id="ov-pause" hidden>
     <div class="sheet">
       <h3 class="sheet-title">已暂停</h3>
@@ -325,7 +336,6 @@
         <button class="btn btn-primary btn-lg" id="btn-resume">继续</button>
         <button class="btn" id="btn-pause-settings">设置</button>
         <button class="btn" id="btn-restart">重开本关</button>
-        <button class="btn btn-ghost" id="btn-quit">返回选关</button>
         <button class="btn btn-ghost" id="btn-home">返回主界面</button>
       </div>
     </div>
@@ -343,14 +353,13 @@
       <div class="result-stats" id="result-stats"></div>
       <p class="result-coins" id="result-coins" hidden></p>
       <div class="result-actions" id="result-actions">
+        <button class="btn btn-ghost" id="btn-result-quit">返回主界面</button>
         <button class="btn rev-btn" id="btn-revive" hidden>
           <span class="rev-icon">💖</span>
           <span>复活</span>
           <span class="prop-count" id="revive-count">0</span>
         </button>
-        <button class="btn btn-primary btn-lg" id="btn-result-primary">下一关</button>
-        <button class="btn" id="btn-result-secondary">再来一次</button>
-        <button class="btn btn-ghost" id="btn-result-quit">返回主界面</button>
+        <button class="btn btn-primary" id="btn-result-primary">下一关</button>
       </div>
     </div>
   </div>
