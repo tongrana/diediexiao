@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#f6f2e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="叠叠消">
+<meta name="mobile-web-app-capable" content="yes">
+<title>叠叠消 · 三张一样的点掉它</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ══════════════════════════ 首页 ══════════════════════════ -->
+  <section class="screen screen-home" id="screen-home" aria-label="叠叠消 · 三张一样的点掉它">
+    <button class="coin-bar" id="btn-shop" aria-label="打开商城">
+      <span class="coin-icon">🪙</span>
+      <span class="coin-amount" id="coin-amount">0</span>
+      <span class="coin-cart">🛒</span>
+    </button>
+
+    <div class="home-hero" id="home-hero">
+      <div class="hero-tiles" aria-hidden="true">
+        <span class="hero-tile word t1">叠</span>
+        <span class="hero-tile deco t2">🥕</span>
+        <span class="hero-tile word mid t3">叠</span>
+        <span class="hero-tile deco t4">✂️</span>
+        <span class="hero-tile word t5">消</span>
+      </div>
+    </div>
+
+    <div class="home-actions" id="home-actions">
+      <button class="btn btn-primary btn-xl" id="btn-continue">
+        <span>继续闯关</span><span class="btn-note" id="continue-note">第 1 关</span>
+      </button>
+      <div class="home-row">
+        <button class="btn btn-lg" id="btn-levels">选择关卡</button>
+        <button class="btn btn-lg" id="btn-custom">自定义关卡</button>
+      </div>
+      <div class="home-row">
+        <button class="btn btn-ghost" id="btn-stats">统计</button>
+        <button class="btn btn-ghost" id="btn-settings">设置</button>
+      </div>
+    </div>
+
+    <p class="home-foot" id="home-foot">进度自动保存在本机</p>
+  </section>
+
+  <!-- ══════════════════════════ 选关 ══════════════════════════ -->
+  <section class="screen" id="screen-levels" hidden>
+    <header class="page-head">
+      <button class="btn-icon" id="btn-levels-back" aria-label="返回">‹</button>
+      <h2 class="page-title">选择关卡</h2>
+      <span class="page-sub" id="levels-progress">1 / 20</span>
+    </header>
+    <div class="level-scroll">
+      <div class="level-grid" id="level-grid"></div>
+      <p class="hint-text">每关可以选 简单 / 普通 / 困难 三档重玩</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 游戏 ══════════════════════════ -->
+  <section class="screen screen-game" id="screen-game" hidden>
+    <header class="hud">
+      <button class="btn-icon" id="btn-pause" aria-label="暂停">❚❚</button>
+      <div class="hud-center">
+        <div class="hud-title">
+          <span id="hud-level">第 1 关</span>
+          <span class="chip" id="hud-tier">普通</span>
+        </div>
+        <div class="timebar" id="timebar"><div class="timebar-fill" id="timebar-fill"></div></div>
+      </div>
+      <div class="hud-time" id="hud-time">0:45</div>
+    </header>
+
+    <div class="subbar">
+      <span id="hud-progress">剩余 6 组</span>
+      <span class="combo-tag" id="hud-combo" hidden>连击 ×2</span>
+    </div>
+
+    <div class="board-wrap" id="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+
+    <div class="tray-wrap">
+      <div class="tray" id="tray"></div>
+    </div>
+
+    <div class="props" id="props">
+      <button class="prop" data-prop="undo">
+        <span class="prop-icon">↩</span><span class="prop-label">撤销</span>
+        <span class="prop-count" id="cnt-undo">0</span>
+      </button>
+      <button class="prop" data-prop="shuffle">
+        <span class="prop-icon">🔀</span><span class="prop-label">洗牌</span>
+        <span class="prop-count" id="cnt-shuffle">0</span>
+      </button>
+      <button class="prop" data-prop="hint">
+        <span class="prop-icon">💡</span><span class="prop-label">提示</span>
+        <span class="prop-count" id="cnt-hint">0</span>
+      </button>
+      <button class="prop" data-prop="addTime">
+        <span class="prop-icon">⏱</span><span class="prop-label">加时</span>
+        <span class="prop-count" id="cnt-addTime">0</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 自定义关卡 ══════════════════════════ -->
+  <section class="screen" id="screen-editor" hidden>
+    <header class="page-head">
+      <button class="btn-icon" id="btn-editor-back" aria-label="返回">‹</button>
+      <h2 class="page-title">自定义关卡</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-import">导入</button>
+    </header>
+
+    <div class="editor-scroll">
+      <div class="card">
+        <label class="field">
+          <span class="field-label">关卡名</span>
+          <input class="input" id="f-name" maxlength="12" placeholder="我的关卡">
+        </label>
+
+        <div class="slider" data-key="tiles">
+          <div class="slider-head"><span>总牌数</span><b id="v-tiles">60</b></div>
+          <input type="range" id="f-tiles" min="15" max="132" step="3" value="60">
+          <div class="slider-foot"><span>15</span><span>132</span></div>
+        </div>
+
+        <div class="slider" data-key="types">
+          <div class="slider-head"><span>牌种数量</span><b id="v-types">8</b></div>
+          <input type="range" id="f-types" min="4" max="14" step="1" value="8">
+          <div class="slider-foot"><span>4</span><span>14</span></div>
+        </div>
+
+        <div class="slider" data-key="layers">
+          <div class="slider-head"><span>层数</span><b id="v-layers">5</b></div>
+          <input type="range" id="f-layers" min="2" max="8" step="1" value="5">
+          <div class="slider-foot"><span>2</span><span>8</span></div>
+        </div>
+
+        <div class="slider" data-key="slot">
+          <div class="slider-head"><span>卡槽格子</span><b id="v-slot">7</b></div>
+          <input type="range" id="f-slot" min="5" max="8" step="1" value="7">
+          <div class="slider-foot"><span>5</span><span>8</span></div>
+        </div>
+
+        <div class="slider" data-key="time">
+          <div class="slider-head"><span>时间限制</span><b id="v-time">自动</b></div>
+          <input type="range" id="f-time" min="0" max="600" step="5" value="0">
+          <div class="slider-foot"><span>自动</span><span>10:00</span></div>
+        </div>
+
+        <div class="slider" data-key="bonus">
+          <div class="slider-head"><span>每消除奖励</span><b id="v-bonus">2.5 秒</b></div>
+          <input type="range" id="f-bonus" min="0" max="6" step="0.5" value="2.5">
+          <div class="slider-foot"><span>0</span><span>6 秒</span></div>
+        </div>
+
+        <div class="slider" data-key="spread">
+          <div class="slider-head"><span>图案打散程度</span><b id="v-spread">12</b></div>
+          <input type="range" id="f-spread" min="0" max="30" step="1" value="12">
+          <div class="slider-foot"><span>挨在一起</span><span>非常分散</span></div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">牌堆形状</span>
+          <select class="input" id="f-shape">
+            <option value="auto">自动</option>
+            <option value="pyramid">金字塔</option>
+            <option value="diamond">菱形</option>
+            <option value="ring">环形</option>
+            <option value="cross">十字</option>
+            <option value="twin">双塔</option>
+            <option value="wave">波浪</option>
+            <option value="hollow">空心</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="card-title">道具次数</div>
+        <div class="prop-grid" id="prop-editor">
+          <label class="prop-field"><span>撤销</span><input type="number" id="f-prop-undo" min="0" max="5" value="2"></label>
+          <label class="prop-field"><span>洗牌</span><input type="number" id="f-prop-shuffle" min="0" max="5" value="2"></label>
+          <label class="prop-field"><span>提示</span><input type="number" id="f-prop-hint" min="0" max="5" value="2"></label>
+          <label class="prop-field"><span>加时</span><input type="number" id="f-prop-addTime" min="0" max="5" value="1"></label>
+        </div>
+      </div>
+
+      <div class="card card-eval">
+        <div class="eval-row"><span>预计通关</span><b id="eval-time">2:04</b></div>
+        <div class="eval-row"><span>难度</span><b id="eval-diff">适中</b></div>
+        <div class="eval-row"><span>可解性</span><b class="eval-ok" id="eval-solvable">已保证可解</b></div>
+        <p class="hint-text" id="eval-warn" hidden></p>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn btn-primary btn-lg" id="btn-play-custom">生成并试玩</button>
+        <button class="btn" id="btn-save-custom">保存到列表</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">我的关卡 <span class="card-count" id="custom-count">0</span></div>
+        <div class="custom-list" id="custom-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 统计 ══════════════════════════ -->
+  <section class="screen" id="screen-stats" hidden>
+    <header class="page-head">
+      <button class="btn-icon" id="btn-stats-back" aria-label="返回">‹</button>
+      <h2 class="page-title">统计</h2>
+      <span class="page-sub"></span>
+    </header>
+    <div class="editor-scroll">
+      <div class="card">
+        <div class="stat-grid" id="stat-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">各关最佳</div>
+        <div class="stat-list" id="stat-levels"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-reset-data">清除所有数据</button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 商城 ══════════════════════════ -->
+  <section class="screen" id="screen-shop" hidden>
+    <header class="page-head">
+      <button class="btn-icon" id="btn-shop-back" aria-label="返回">‹</button>
+      <h2 class="page-title">商城</h2>
+      <span class="coin-chip"><span class="coin-icon">🪙</span><span id="shop-coins">0</span></span>
+    </header>
+    <div class="editor-scroll">
+      <p class="hint-text shop-hint">通关主线关卡获得金币；关卡越难、星级越高，金币越多。买到的道具会存进库存，跨关可用。</p>
+      <div class="shop-list" id="shop-list"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-go-levels">去赚金币</button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 设置（独立页面） ══════════════════════════ -->
+  <section class="screen" id="screen-settings" hidden>
+    <header class="page-head">
+      <button class="btn-icon" id="btn-settings-back" aria-label="返回">‹</button>
+      <h2 class="page-title">设置</h2>
+    </header>
+    <div class="editor-scroll">
+      <div class="card">
+        <label class="setting">
+          <span class="setting-main">音效<small class="setting-sub">点击、消除、通关的提示音</small></span>
+          <input type="checkbox" id="set-sfx" checked>
+        </label>
+        <label class="setting">
+          <span class="setting-main">背景音乐<small class="setting-sub">轻柔的循环旋律，可以随时关掉</small></span>
+          <input type="checkbox" id="set-music" checked>
+        </label>
+        <label class="setting">
+          <span class="setting-main">震动反馈<small class="setting-sub">手机上点按时轻微震动</small></span>
+          <input type="checkbox" id="set-haptics" checked>
+        </label>
+        <label class="setting">
+          <span class="setting-main">动画效果<small class="setting-sub">关闭后所有过渡动画立即完成</small></span>
+          <input type="checkbox" id="set-motion" checked>
+        </label>
+        <label class="setting">
+          <span class="setting-main">字体大小<small class="setting-sub">整体放大界面文字</small></span>
+          <select id="set-fontscale" class="input input-sm">
+            <option value="1">标准</option>
+            <option value="1.1">大</option>
+            <option value="1.2">特大</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card">
+        <label class="setting">
+          <span class="setting-main">调试模式<small class="setting-sub">解锁全部关卡 + 无限调试金币（关闭后调试道具消失）</small></span>
+          <input type="checkbox" id="set-debug">
+        </label>
+        <p class="hint-text" id="debug-note" hidden>已开启：所有关卡可进入，金币显示为「原有 + ∞」。</p>
+      </div>
+
+      <div class="card card-rules">
+        <div class="card-title">星级标准</div>
+        <div class="rule-row"><span class="stars-mini on">★★★</span><span>通关时剩余时间 ≥ <b id="rule-three">40%</b></span></div>
+        <div class="rule-row"><span class="stars-mini">★★☆</span><span>通关时剩余时间 ≥ <b id="rule-two">15%</b></span></div>
+        <div class="rule-row"><span class="stars-mini">★☆☆</span><span>通关即得（用过加时最多 2 星）</span></div>
+      </div>
+
+      <button class="btn btn-ghost btn-sm" id="btn-reset-data2">清除所有数据</button>
+      <p class="hint-text">游戏进度、自定义关卡都存在本机浏览器里</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 浮层 ══════════════════════════ -->
+  <div class="overlay" id="ov-tier" hidden>
+    <div class="sheet">
+      <h3 class="sheet-title" id="tier-title">第 1 关</h3>
+      <p class="sheet-sub">选择难度</p>
+      <div class="tier-list" id="tier-list"></div>
+      <button class="btn btn-ghost" id="btn-tier-close">取消</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-pause" hidden>
+    <div class="sheet">
+      <h3 class="sheet-title">已暂停</h3>
+      <div class="sheet-actions">
+        <button class="btn btn-primary btn-lg" id="btn-resume">继续</button>
+        <button class="btn" id="btn-pause-settings">设置</button>
+        <button class="btn" id="btn-restart">重开本关</button>
+        <button class="btn btn-ghost" id="btn-quit">返回选关</button>
+        <button class="btn btn-ghost" id="btn-home">返回主界面</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-result" hidden>
+    <div class="sheet sheet-result">
+      <p class="result-badge" id="result-badge" hidden>🎊 新纪录</p>
+      <div class="result-head">
+        <span class="result-icon" id="result-icon">🎉</span>
+        <h3 class="sheet-title" id="result-title">通关！</h3>
+      </div>
+      <p class="sheet-sub" id="result-sub"></p>
+      <div class="stars" id="result-stars"></div>
+      <div class="result-stats" id="result-stats"></div>
+      <p class="result-coins" id="result-coins" hidden></p>
+      <div class="sheet-actions">
+        <button class="btn btn-primary btn-lg" id="btn-result-primary">下一关</button>
+        <button class="btn" id="btn-result-secondary">再来一次</button>
+        <button class="btn btn-ghost" id="btn-result-quit">返回主界面</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-share" hidden>
+    <div class="sheet">
+      <h3 class="sheet-title">分享 / 导入关卡</h3>
+      <p class="sheet-sub">把下面这串代码发给朋友，对方粘贴到「导入」即可玩同一关</p>
+      <textarea class="input share-box" id="share-code" rows="4" readonly></textarea>
+      <div class="sheet-actions">
+        <button class="btn btn-primary" id="btn-copy-share">复制分享码</button>
+        <button class="btn btn-ghost" id="btn-close-share">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-import" hidden>
+    <div class="sheet">
+      <h3 class="sheet-title">导入关卡</h3>
+      <p class="sheet-sub">粘贴朋友发来的分享码</p>
+      <textarea class="input share-box" id="import-code" rows="4" placeholder="TQ1.…"></textarea>
+      <div class="sheet-actions">
+        <button class="btn btn-primary" id="btn-do-import">导入并试玩</button>
+        <button class="btn btn-ghost" id="btn-cancel-import">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <div class="floats" id="floats"></div>
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="js/lib/levels.js"></script>
+<script src="js/lib/core.js"></script>
+<script src="js/platform-web.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/editor.js"></script>
+</body>
+</html>
