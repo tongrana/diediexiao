@@ -171,6 +171,20 @@
       else stopMusic();
     },
 
+    /** 真正暂停：先停掉音乐调度器（否则恢复时会把积压的音符一次放出来） */
+    setPaused: function (v) {
+      try {
+        if (v) {
+          stopMusic();
+          if (ctx && ctx.state === 'running') ctx.suspend();
+        } else {
+          ensure();
+          if (musicOn) startMusic();
+          if (ctx && ctx.state === 'suspended') ctx.resume();
+        }
+      } catch (e) { /* ignore */ }
+    },
+
     suspend: function () {
       try { if (ctx && ctx.state === 'running') ctx.suspend(); } catch (e) { /* ignore */ }
     },

@@ -10,14 +10,27 @@ android {
         applicationId "com.tq.stack"
         minSdk 23
         targetSdk 34
-        versionCode 5
-        versionName "1.4"
+        versionCode 7
+        versionName "1.5"
+    }
+
+    // 固定签名：保证每次云端构建的证书一致，新包能直接覆盖安装旧版
+    signingConfigs {
+        fixed {
+            storeFile file("../keystore.jks")
+            storePassword "tq123456"
+            keyAlias "diediexiao"
+            keyPassword "tq123456"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.fixed
+        }
         release {
             minifyEnabled false
-            signingConfig signingConfigs.debug   // 演示用；正式发布请换成自己的签名
+            signingConfig signingConfigs.fixed
         }
     }
 

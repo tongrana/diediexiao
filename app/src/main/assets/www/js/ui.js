@@ -994,7 +994,7 @@
     const g = S.game;
     if (!g) return;
     if (g.pause()) {
-      try { A.suspend(); } catch (e) { /* ignore */ }
+      if (A.setPaused) A.setPaused(true);
       openOverlay('ov-pause');
       haptic(6);
     }
@@ -1004,7 +1004,7 @@
     const g = S.game;
     if (!g) return;
     g.resume();
-    try { A.resume(); } catch (e) { /* ignore */ }
+    if (A.setPaused) A.setPaused(false);
     closeOverlay('ov-pause');
     S.lastT = performance.now();
   }
@@ -1371,10 +1371,10 @@
 
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
-      try { A.suspend(); } catch (e) { /* ignore */ }   // 切后台先静音，音乐不再响
+      if (A.setPaused) A.setPaused(true);              // 切后台立刻停音乐
       if (S.game && S.game.status === 'playing' && S.screen === 'game') pauseGame();
     } else if (S.screen === 'game' && S.game && S.game.status === 'playing') {
-      try { A.resume(); } catch (e) { /* ignore */ }
+      if (A.setPaused) A.setPaused(false);
     }
     });
 
