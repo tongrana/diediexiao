@@ -17,6 +17,13 @@
   let nextNoteTime = 0;
   let step = 0;
 
+  /** 主音量：0~2，1 为基准；设置里的滑块右大左小 */
+  function setVolume(v) {
+    volume = Math.max(0, Math.min(2, Number(v) || 0));
+    try { if (master) master.gain.value = volume; } catch (e) { /* ignore */ }
+    return volume;
+  }
+
   function ensure() {
     if (!enabled && !musicOn) return null;
     try {

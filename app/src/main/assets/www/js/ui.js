@@ -1153,9 +1153,9 @@
 
   /* ═══════════════════════════ 设置 ═══════════════════════════ */
   function applySettings() {
-    A.setEnabled(!!S.settings.sfx);
-    if (A.setMusicEnabled) A.setMusicEnabled(!!S.settings.music);
-    if (A.setVolume) A.setVolume(S.settings.volume == null ? 1.15 : S.settings.volume);
+    if (A && A.setEnabled) A.setEnabled(!!S.settings.sfx);
+    if (A && A.setMusicEnabled) A.setMusicEnabled(!!S.settings.music);
+    if (A && A.setVolume) A.setVolume(S.settings.volume == null ? 1.15 : S.settings.volume);
     if ($('#set-volume')) {
       $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100));
       if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100) + '%';
