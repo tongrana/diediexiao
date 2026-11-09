@@ -19,6 +19,12 @@ public class MainActivity extends Activity {
 
     private WebView web;
 
+    /** 包一层：把 JS 返回的字符串转成布尔 */
+    static final class AsyncResult {
+        final boolean handled;
+        AsyncResult(String v) { this.handled = v != null && v.contains("handled"); }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +104,10 @@ public class MainActivity extends Activity {
         // 让网页自己处理返回（回到主界面），到底了再退出
         if (web != null) {
             web.evaluateJavascript(
-                    "(function(){var a=window.TQApp;if(a&&a.goScreen){a.goScreen('home');return 'handled';}return 'pass';})();",
+                    "(function(){var a=window.TQApp;if(a&&a.handleBack){return a.handleBack();}return 'pass';})();",
                     value -> {
-                        if (value == null || !value.contains("handled")) {
+                        AsyncResult ar = new AsyncResult(value);
+                        if (!ar.handled) {
                             MainActivity.super.onBackPressed();
                         }
                     });

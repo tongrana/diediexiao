@@ -718,13 +718,11 @@
       const s = state.history.pop();
       for (let i = 0; i < n; i++) { rem[i] = s.rem[i]; coverCnt[i] = s.coverCnt[i]; }
       state.tray = s.tray.slice();
-      state.timeLeft = s.timeLeft;
-      state.elapsed = s.elapsed;
+      // 只回退「牌面」：时间不回滚（否则等于白送时间），
+      // 这中间用掉的道具也不返还（只扣一次撤销本身）。
       state.combo = s.combo;
       state.lastClearElapsed = s.lastClearElapsed;
-      state.usedAddTime = s.usedAddTime;
       state.stats = { clicks: s.stats.clicks, clears: s.stats.clears, bonus: s.stats.bonus };
-      state.props = { free: Object.assign({}, s.props.free), stock: Object.assign({}, s.props.stock) };
       state.status = 'playing';
       takeProp('undo');
       return { ok: true, events: [{ type: 'undone', tray: state.tray.slice() }] };
@@ -789,6 +787,16 @@
       const ids = (freeByType[bestType] || []).slice(0, Math.max(1, 3 - (trayCount[bestType] || 0)));
       takeProp('hint');
       return { ok: true, types: [bestType], tiles: ids };
+    };
+
+    /** 失败后复活：回到游戏中，补时；星级上限不变（用了就算用过加时） */
+    state.revive = function (extraSec) {
+      if (state.status !== 'lost') return { ok: false, reason: 'status' };
+      state.status = 'playing';
+      state.timeLeft += (extraSec || 30);
+      state.usedAddTime = true;
+      state.usedRevive = true;
+      return { ok: true, events: [{ type: 'revived' }] };
     };
 
     state.addTime = function () {

@@ -66,7 +66,8 @@
     { id: 'undo', name: '撤销', icon: '↩', price: 20, desc: '回退上一步，连已消除的也能退回' },
     { id: 'shuffle', name: '洗牌', icon: '🔀', price: 25, desc: '重排剩下的牌，洗后仍保证可解' },
     { id: 'hint', name: '提示', icon: '💡', price: 25, desc: '高亮一组能凑成三张的牌' },
-    { id: 'addTime', name: '加时', icon: '⏱', price: 35, desc: '立即 +30 秒（用过最高 2 星）' }
+    { id: 'addTime', name: '加时', icon: '⏱', price: 35, desc: '立即 +30 秒（用过最高 2 星）' },
+    { id: 'revive', name: '复活卡', icon: '💖', price: 60, desc: '失败后原地复活，额外 +30 秒' }
   ];
 
   /* ---------------------------------------------------------------- 难度档 */

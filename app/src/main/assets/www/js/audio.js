@@ -10,7 +10,7 @@
   let enabled = true;        // 音效
   let musicOn = false;       // 背景音乐开关
   let master = null;
-  let volume = 1.15;
+  let volume = 1.4;
   let sfxBus = null;
   let musicBus = null;
   let musicTimer = null;

@@ -17,11 +17,11 @@
   const LEVEL_COUNT = Levels.mainLevelCount();
 
   const DEFAULT_PROGRESS = { unlocked: 1, levels: {} };
-  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, volume: 1.15, debug: false };
+  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, volume: 1.4, debug: false };
   const DEFAULT_STATS = { plays: 0, wins: 0, totalClearMs: 0, bestCombo: 0 };
   const DEFAULT_WALLET = {
     coins: 0,
-    items: { undo: 0, shuffle: 0, hint: 0, addTime: 0 },
+    items: { undo: 0, shuffle: 0, hint: 0, addTime: 0, revive: 0 },
     // 调试模式下用「调试金币」买的道具，关闭调试即清空
     debugItems: { undo: 0, shuffle: 0, hint: 0, addTime: 0 }
   };
@@ -47,7 +47,7 @@
   };
 
   // wallet.items 可能缺字段（老存档），补齐
-  S.wallet.items = Object.assign({ undo: 0, shuffle: 0, hint: 0, addTime: 0 }, S.wallet.items || {});
+  S.wallet.items = Object.assign({ undo: 0, shuffle: 0, hint: 0, addTime: 0, revive: 0 }, S.wallet.items || {});
   S.wallet.debugItems = Object.assign({ undo: 0, shuffle: 0, hint: 0, addTime: 0 }, S.wallet.debugItems || {});
 
   function persistWallet() {
@@ -160,8 +160,19 @@
 
   /* ── 界面过场：镜头推近式交叉淡入（缩放缓动，纯 transform/opacity，不掉帧） ── */
   let switching = false;
+  /** 彻底结束当前这局（停循环、清状态），回到主界面/选关时调用 */
+  function leaveGame() {
+    closeAllOverlays();
+    stopLoop();
+    syncStock();
+    S.game = null;
+    S.result = null;
+    S.lockUntil = 0;
+  }
+
   function goScreen(name) {
     if (name === S.screen) return;
+    if (S.screen === 'game' && (name === 'home' || name === 'levels')) leaveGame();
     if (S.instant || !S.settings.motion || switching) {
       showScreen(name);
       return;
@@ -399,16 +410,16 @@
       el.dataset.id = String(t.id);
       el.dataset.type = t.type;
       el.innerHTML = '<span class="glyph">' + t.type + '</span>';
-      // 触摸设备用 pointerdown 立即响应，鼠标仍用 click
-      el.addEventListener('pointerdown', function (ev) {
+      // 触摸设备：手指「抬起」才算点中（按下时可能是在滑动）
+      el.addEventListener('pointerup', function (ev) {
         if (ev.pointerType === 'mouse') return;   // 鼠标交给 click
         if (ev.cancelable) ev.preventDefault();
         onTileClick(ev);
         el.dataset.tapped = '1';
-        setTimeout(function () { delete el.dataset.tapped; }, 60);
+        setTimeout(function () { delete el.dataset.tapped; }, 420);
       });
       el.addEventListener('click', function (ev) {
-        if (el.dataset.tapped) return;            // pointerdown 已经处理过
+        if (el.dataset.tapped) return;            // pointerup 已经处理过
         onTileClick(ev);
       });
       if (drop) {
@@ -579,6 +590,7 @@
   function onTileClick(e) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
+    if (performance.now() < (S.lockUntil || 0)) return;   // 消除瞬间的防误触
     const id = Number(e.currentTarget.dataset.id);
     const r = g.click(id);
     if (!r.ok) {
@@ -597,6 +609,7 @@
       if (clearedEv && placedEv && placedEv.tray) {
         // 先画出「三张都在槽里」的样子，再让它们汇合
         renderTrayList(placedEv.tray);
+        S.lockUntil = performance.now() + 220;
         setTimeout(function () {
           const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
             setTimeout(function () { renderTray(); }, fxMs);
@@ -1080,6 +1093,15 @@
     const secondary = $('#btn-result-secondary');
     const canNext = r.won && !custom && S.meta.level < LEVEL_COUNT;
     // 失败时给一个明确的「重新开始」入口
+    const rev = $('#btn-revive');
+    const acts = $('#result-actions');
+    const canRevive = !r.won && g.status === 'lost';
+    if (rev && acts) {
+      rev.hidden = !canRevive;
+      acts.classList.toggle('is-fail', !!canRevive);
+      const rc = $('#revive-count');
+      if (rc) rc.textContent = S.settings.debug ? '∞' : String(S.wallet.items.revive || 0);
+    }
     primary.textContent = canNext ? '下一关' : '重新开始';
     primary.dataset.action = canNext ? 'next' : 'again';
     secondary.textContent = '再来一次';
@@ -1144,7 +1166,7 @@
     $('#set-debug').checked = !!S.settings.debug;
     $('#set-fontscale').value = String(S.settings.fontScale || 1);
     if ($('#set-volume')) {
-      const vol = S.settings.volume == null ? 1.15 : S.settings.volume;
+      const vol = S.settings.volume == null ? 1.4 : S.settings.volume;
       $('#set-volume').value = String(Math.round(vol * 100));
       if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round(vol * 100) + '%';
     }
@@ -1155,10 +1177,10 @@
   function applySettings() {
     if (A && A.setEnabled) A.setEnabled(!!S.settings.sfx);
     if (A && A.setMusicEnabled) A.setMusicEnabled(!!S.settings.music);
-    if (A && A.setVolume) A.setVolume(S.settings.volume == null ? 1.15 : S.settings.volume);
+    if (A && A.setVolume) A.setVolume(S.settings.volume == null ? 1.4 : S.settings.volume);
     if ($('#set-volume')) {
-      $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100));
-      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100) + '%';
+      $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.4 : S.settings.volume) * 100));
+      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.4 : S.settings.volume) * 100) + '%';
     }
     app.classList.toggle('reduced-motion', !S.settings.motion);
     $('#set-sfx').checked = !!S.settings.sfx;
@@ -1223,6 +1245,27 @@
       else restartCurrent();
     });
     $('#btn-result-secondary').addEventListener('click', restartCurrent);
+
+    $('#btn-revive').addEventListener('click', function () {
+      const g = S.game;
+      if (!g || g.status !== 'lost') return;
+      if (!S.settings.debug && (S.wallet.items.revive || 0) <= 0) {
+        toast('没有复活卡了，去商城买一张');
+        return;
+      }
+      if (!S.settings.debug) {
+        S.wallet.items.revive -= 1;
+        persistWallet();
+      }
+      g.revive(30);
+      S.result = null;
+      closeOverlay('ov-result');
+      updateHUD(true);
+      startLoop();
+      A.prop();
+      haptic(14);
+      toast('复活！时间 +30 秒');
+    });
     $('#btn-result-quit').addEventListener('click', function () {
       closeAllOverlays();
       syncStock();
@@ -1326,6 +1369,16 @@
       if (e.key === '4') useProp('addTime');
     });
 
+    // 点浮层空白处关闭（暂停面板视作「继续」）
+    $$('.overlay').forEach(function (ov) {
+      ov.addEventListener('click', function (ev) {
+        if (ev.target !== ov) return;
+        if (ov.id === 'ov-pause') resumeGame();
+        else if (ov.id === 'ov-result') return;   // 结算必须做个选择
+        else closeOverlay(ov.id);
+      });
+    });
+
     // 首次手势解锁音频
     document.addEventListener('pointerdown', function once() {
       A.unlock();
@@ -1354,6 +1407,24 @@
   }
 
   window.TQApp = {
+    /** Android 返回键：先关浮层 → 游戏里弹暂停 → 其它回主界面 */
+    handleBack: function () {
+      const open = $$('.overlay').filter(function (o) { return !o.hidden; });
+      if (open.length) {
+        if (open[0].id === 'ov-pause') resumeGame();
+        else closeOverlay(open[0].id);
+        return 'handled';
+      }
+      if (S.screen === 'game') {
+        if (S.game && S.game.status === 'playing') pauseGame();
+        return 'handled';
+      }
+      if (S.screen !== 'home') {
+        goScreen('home');
+        return 'handled';
+      }
+      return 'pass';
+    },
     startMain: startMain,
     startGame: startGame,
     startCustom: function (config) {

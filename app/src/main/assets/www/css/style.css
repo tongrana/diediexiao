@@ -1582,3 +1582,85 @@ input[type="range"]::-moz-range-thumb {
   color: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
+
+
+/* ───────── 结算：一行三个按钮（复活卡 / 返回主界面 / 重新开始） ───────── */
+.result-actions {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+.result-actions .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 50px;
+  padding: 0.45em 0.35em;
+  font-size: var(--fs-body);
+  border-radius: var(--r-md);
+}
+
+/* 失败时顺序：复活卡 → 返回主界面 → 重新开始 */
+.result-actions.is-fail #btn-revive { order: 1; }
+.result-actions.is-fail #btn-result-quit { order: 2; }
+.result-actions.is-fail #btn-result-primary { order: 3; }
+
+.rev-btn {
+  position: relative;
+  border-color: rgba(230, 120, 140, 0.45);
+  background: linear-gradient(160deg, #fff5f7, #ffe9ef);
+  color: #b34a63;
+  font-weight: 800;
+}
+
+.rev-btn .rev-icon { margin-right: 0.15em; }
+
+.rev-btn .prop-count {
+  top: -7px;
+  right: -5px;
+}
+
+/* 主页按钮：更窄、更矮、整体下移 */
+.home-actions {
+  gap: 0.45rem;
+  margin-top: clamp(3.2rem, 16vh, 7rem);
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+}
+
+.home-actions .btn-xl { min-height: 2.7em; }
+.home-actions .btn-lg { min-height: 2.45em; }
+.home-actions .btn-ghost { min-height: 2.2em; }
+
+/* 选关 / 商城 / 统计：内容整体居中 */
+.level-scroll,
+.editor-scroll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.level-scroll > *,
+.editor-scroll > * {
+  width: 100%;
+}
+
+.level-grid {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.shop-list,
+.stat-grid {
+  max-width: 30rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 返回箭头：居中且加粗 */
+.btn-icon {
+  font-weight: 900;
+  line-height: 1;
+  padding: 0;
+  font-size: 1.15em;
+}
