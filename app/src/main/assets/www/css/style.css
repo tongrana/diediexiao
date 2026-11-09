@@ -1521,14 +1521,6 @@ input[type="range"]::-moz-range-thumb {
   .sheet { max-height: 96dvh; padding-top: 1.1rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.001ms !important;
-    animation-delay: 0s !important;
-    transition-duration: 0.001ms !important;
-    transition-delay: 0s !important;
-  }
-}
 
 /* ────────────────────── 界面过场：镜头推近 + 交叉淡入 ──────────────────────
    旧页面轻微放大淡出、新页面从 0.97 放大淡入，纯 transform/opacity，
@@ -1643,15 +1635,15 @@ input[type="range"]::-moz-range-thumb {
 
 /* 主页按钮：更窄、更矮、整体下移 */
 .home-actions {
-  gap: 0.62rem;
+  gap: 1.86rem;
   margin-top: clamp(4.2rem, 21vh, 9rem);
   padding-left: 0.9rem;
   padding-right: 0.9rem;
 }
 
-.home-actions .btn-xl { min-height: 2.7em; }
-.home-actions .btn-lg { min-height: 2.45em; }
-.home-actions .btn-ghost { min-height: 2.2em; }
+.home-actions .btn-xl { min-height: 1.8em; }
+.home-actions .btn-lg { min-height: 1.63em; }
+.home-actions .btn-ghost { min-height: 1.47em; }
 
 /* 选关 / 商城 / 统计：内容整体居中 */
 .level-scroll,
@@ -1722,5 +1714,20 @@ input[type="range"]::-moz-range-thumb {
 .sheet .btn:active { filter: brightness(0.97); }
 
 
-/* 牌还没落进来之前，目标格子先空着（其他牌已经让位） */
+/* 牌还没落进来之前：格子保持「空虚线框」，其他牌已经让位 */
+.slot.landing {
+  border-style: dashed;
+  border-color: rgba(35, 41, 31, 0.16);
+  background: transparent;
+}
 .slot.landing .face { opacity: 0; }
+
+
+/* 字号调大时不撑破布局：主视觉和按钮尺寸同时受视口约束 */
+.hero-tile {
+  width: min(calc(var(--fs) * 3.5), 19vh) !important;
+  height: min(calc(var(--fs) * 4.25), 23vh) !important;
+}
+
+.home-actions .btn-xl,
+.home-actions .btn-lg { max-width: 100%; }

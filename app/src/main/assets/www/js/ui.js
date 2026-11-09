@@ -608,13 +608,16 @@
     // 落牌顺序：先让后面的牌「避让」出位置，再让这张牌飞进去归位
     const landingIdx = (flew && placedEv && placedEv.slot != null) ? placedEv.slot : -1;
     if (flew && !clearedEv) {
-      renderTray();                       // 立刻重排：其他牌用 FLIP 滑到新位置
+      const pend = S.pendingLand;
+      renderTray();                       // 第一步：其他牌先滑开让位（FLIP）
       const slotsNow = $$('#tray .slot');
       const target = slotsNow[landingIdx];
-      if (target) {
-        target.classList.add('landing');  // 先不显示，等牌落进来
-        setTimeout(function () { target.classList.remove('landing'); }, 236);
+      if (target && pend && pend.rect) {
+        target.classList.add('landing');  // 先空着（虚线框保留）
+        landFace(target, pend.rect);      // 第二步：面片从牌堆位置滑进来
+        setTimeout(function () { target.classList.remove('landing'); }, 300);
       }
+      S.pendingLand = null;
     } else {
     const showSlot = function () {
       if (clearedEv && placedEv && placedEv.tray) {
@@ -742,44 +745,22 @@
     } catch (e) { /* ignore */ }
   }
 
-  /** 牌从牌堆位置「飞」进卡槽：用 WAAPI 跑合成层动画，不影响布局 */
-  function flyToSlot(tileEl, slotEl, tileId) {
-    if (S.instant || !S.settings.motion || !tileEl || !slotEl) return false;
-    const a = tileEl.getBoundingClientRect();
+  /** 归位动画：让槽位里的面片从牌堆位置「滑」进来——和让位用同一条曲线，纯 transform */
+  function landFace(slotEl, rect) {
+    if (S.instant || !S.settings.motion || !slotEl || !rect) return false;
+    const face = slotEl.firstChild;
+    if (!face || !face.animate) return false;
     const b = slotEl.getBoundingClientRect();
-    if (!a.width || !b.width) return false;
-    const ghost = document.createElement('div');
-    ghost.className = 'fly-tile';
-    ghost.textContent = tileEl.textContent;
-    ghost.style.left = a.left + 'px';
-    ghost.style.top = a.top + 'px';
-    ghost.style.width = a.width + 'px';
-    ghost.style.height = a.height + 'px';
-    // 牌面在图板里被整体缩放过，字号/圆角按实际视觉尺寸换算，起手才不会「跳一下」
-    ghost.style.fontSize = (a.width * 0.565) + 'px';
-    ghost.style.borderRadius = Math.max(6, Math.round(a.width * 0.22)) + 'px';
-    document.body.appendChild(ghost);
-
-    const dx = (b.left + b.width / 2) - (a.left + a.width / 2);
-    const dy = (b.top + b.height / 2) - (a.top + a.height / 2);
-    const scale = Math.max(0.34, b.width / a.width);
-    const midScale = (1 + scale) / 2;
-
-    // 等幻影牌消失之后（236ms），格子里的牌再从「飞来的方向」弹进来
-    setTimeout(function () { bounceFace(slotEl, tileId, dx, dy); }, 236);
-
+    if (!b.width) return false;
+    const dx = (rect.left + rect.width / 2) - (b.left + b.width / 2);
+    const dy = (rect.top + rect.height / 2) - (b.top + b.height / 2);
+    const sc = Math.max(0.55, Math.min(2.4, rect.width / Math.max(1, b.width)));
     try {
-      const anim = ghost.animate([
-        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-        { transform: 'translate(' + (dx * 0.5) + 'px,' + (dy * 0.5 - 22) + 'px) scale(' + midScale + ')', opacity: 1, offset: 0.5 },
-        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')', opacity: 0.85 }
-      ], { duration: 230, easing: 'cubic-bezier(0.32, 0.72, 0.3, 1)' });
-      anim.onfinish = function () { ghost.remove(); };
-      anim.oncancel = function () { ghost.remove(); };
-    } catch (e) {
-      ghost.remove();
-      return false;
-    }
+      face.animate([
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')', opacity: 0.85 },
+        { transform: 'none', opacity: 1 }
+      ], { duration: 300, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+    } catch (e) { return false; }
     return true;
   }
 
@@ -792,17 +773,20 @@
           const slots = $$('#tray .slot');
           const slotIndex = (ev.slot != null) ? ev.slot : (ev.tray ? ev.tray.length - 1 : -1);
           const slot = slots[slotIndex];
-          const flew = !!(tileEl && slot && !S.instant && S.settings.motion && flyToSlot(tileEl, slot, ev.tile));
-          if (flew) flewAny = true;
+          const canAnim = !!(tileEl && slot && !S.instant && S.settings.motion);
+          if (canAnim) {
+            S.pendingLand = { slot: slotIndex, rect: tileEl.getBoundingClientRect() };
+            flewAny = true;
+          }
           if (tileEl) {
-            if (flew) {
+            if (canAnim) {
               // 幻影牌已经飞走了，原地这张立刻消失，避免「停一下再缩掉」
               tileEl.style.transition = 'none';
               tileEl.style.opacity = '0';
             } else {
               tileEl.classList.add('taken');
             }
-            setTimeout(function () { tileEl.remove(); }, flew ? 60 : 240);
+            setTimeout(function () { tileEl.remove(); }, canAnim ? 60 : 240);
           }
           A.click();
           haptic(8);

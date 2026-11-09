@@ -21,7 +21,7 @@
   //   中等玩家(1.6s/击) 胜率 85%~100%，慢速玩家(≈2.56s/击) 胜率 25%~70%。
   // 注意：基础时间只是「墙」，真正的可用时间还要加上每次消除的奖励（见 bonus）。
   const TIME = {
-    perTile: 1.42,
+    perTile: 1.44,
     perLayer: 3.5,
     min: 45,
     max: 420,
@@ -99,26 +99,26 @@
   /* -------------------------------------------------------- 主线 20 关表 */
   // triples = 组数，实际牌数 = triples * 3。牌数单调不减，难度平滑上升。
   const MAIN_LEVELS = [
-    { types: 6, layers: 3, triples: 8, shape: 'pyramid' }, //  1 · 24 张
-    { types: 6, layers: 3, triples: 11, shape: 'pyramid' }, //  2 · 33 张
-    { types: 7, layers: 4, triples: 13, shape: 'diamond' }, //  3 · 39 张
-    { types: 7, layers: 4, triples: 16, shape: 'diamond' }, //  4 · 48 张
-    { types: 8, layers: 4, triples: 19, shape: 'ring' }, //  5 · 57 张
-    { types: 8, layers: 5, triples: 22, shape: 'cross' }, //  6 · 66 张
-    { types: 9, layers: 5, triples: 25, shape: 'twin' }, //  7 · 75 张
-    { types: 9, layers: 6, triples: 28, shape: 'wave' }, //  8 · 84 张
-    { types: 10, layers: 6, triples: 31, shape: 'hollow' }, //  9 · 93 张
-    { types: 10, layers: 7, triples: 34, shape: 'cross' }, // 10 · 102 张
-    { types: 11, layers: 8, triples: 37, shape: 'pyramid' }, // 11 · 111 张
-    { types: 11, layers: 6, triples: 40, shape: 'wave' }, // 12 · 120 张
-    { types: 12, layers: 6, triples: 42, shape: 'hollow' }, // 13 · 126 张
-    { types: 12, layers: 7, triples: 44, shape: 'cross' }, // 14 · 132 张
-    { types: 13, layers: 8, triples: 46, shape: 'pyramid' }, // 15 · 138 张
-    { types: 13, layers: 6, triples: 48, shape: 'hollow' }, // 16 · 144 张
-    { types: 14, layers: 8, triples: 50, shape: 'cross' }, // 17 · 150 张
-    { types: 14, layers: 8, triples: 54, shape: 'wave' }, // 18 · 162 张
-    { types: 14, layers: 8, triples: 58, shape: 'hollow' }, // 19 · 174 张
-    { types: 14, layers: 8, triples: 62, shape: 'pyramid' } // 20 · 186 张
+    { types: 6, layers: 3, triples: 9, shape: 'pyramid' }, //  1 · 27 张
+    { types: 6, layers: 3, triples: 12, shape: 'pyramid' }, //  2 · 36 张
+    { types: 7, layers: 4, triples: 15, shape: 'diamond' }, //  3 · 45 张
+    { types: 7, layers: 4, triples: 18, shape: 'diamond' }, //  4 · 54 张
+    { types: 8, layers: 4, triples: 21, shape: 'ring' }, //  5 · 63 张
+    { types: 8, layers: 5, triples: 24, shape: 'cross' }, //  6 · 72 张
+    { types: 9, layers: 5, triples: 27, shape: 'twin' }, //  7 · 81 张
+    { types: 9, layers: 6, triples: 30, shape: 'wave' }, //  8 · 90 张
+    { types: 10, layers: 6, triples: 33, shape: 'hollow' }, //  9 · 99 张
+    { types: 10, layers: 7, triples: 36, shape: 'cross' }, // 10 · 108 张
+    { types: 11, layers: 8, triples: 40, shape: 'pyramid' }, // 11 · 120 张
+    { types: 11, layers: 6, triples: 43, shape: 'wave' }, // 12 · 129 张
+    { types: 12, layers: 6, triples: 46, shape: 'hollow' }, // 13 · 138 张
+    { types: 12, layers: 7, triples: 49, shape: 'cross' }, // 14 · 147 张
+    { types: 13, layers: 8, triples: 52, shape: 'pyramid' }, // 15 · 156 张
+    { types: 13, layers: 6, triples: 53, shape: 'hollow' }, // 16 · 150 张
+    { types: 14, layers: 8, triples: 56, shape: 'cross' }, // 17 · 168 张
+    { types: 14, layers: 8, triples: 60, shape: 'wave' }, // 18 · 180 张
+    { types: 14, layers: 8, triples: 62, shape: 'hollow' }, // 19 · 192 张
+    { types: 14, layers: 8, triples: 63, shape: 'pyramid' } // 20 · 198 张
   ];
 
   /* --------------------------------------------------------------- 工具 */
