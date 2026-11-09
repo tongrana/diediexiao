@@ -262,6 +262,13 @@
           <span class="setting-main">背景音乐<small class="setting-sub">轻柔的循环旋律，可以随时关掉</small></span>
           <input type="checkbox" id="set-music" checked>
         </label>
+        <label class="setting setting-slider">
+          <span class="setting-main">音量<small class="setting-sub">向右变大，向左变小</small></span>
+          <span class="slider-wrap">
+            <input type="range" id="set-volume" min="0" max="150" step="5" value="115" aria-label="音量">
+            <b class="slider-val" id="set-volume-val">115%</b>
+          </span>
+        </label>
         <label class="setting">
           <span class="setting-main">震动反馈<small class="setting-sub">手机上点按时轻微震动</small></span>
           <input type="checkbox" id="set-haptics" checked>

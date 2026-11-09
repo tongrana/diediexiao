@@ -32,8 +32,13 @@ public class MainActivity extends Activity {
         s.setDomStorageEnabled(true);
         s.setAllowFileAccess(true);
         s.setAllowContentAccess(true);
-        s.setLoadWithOverviewMode(true);
-        s.setUseWideViewPort(true);
+        // 不要用「宽视口/概览模式」，否则 WebView 会按 980px 排版，界面被缩小
+        s.setLoadWithOverviewMode(false);
+        s.setUseWideViewPort(false);
+        s.setSupportZoom(false);
+        s.setBuiltInZoomControls(false);
+        s.setDisplayZoomControls(false);
+        s.setTextZoom(100);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
@@ -41,9 +46,35 @@ public class MainActivity extends Activity {
         web.setLongClickable(false);
         web.setHapticFeedbackEnabled(true);
 
+        web.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        web.addJavascriptInterface(new Bridge(), "AndroidBridge");
         web.setWebViewClient(new WebViewClient());
         web.loadUrl("file:///android_asset/www/index.html");
         hideSystemBars();
+    }
+
+    /** 给网页用的原生能力：WebView 里的 navigator.vibrate 常常无效 */
+    public class Bridge {
+        @android.webkit.JavascriptInterface
+        public void vibrate(int ms) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    android.os.VibratorManager vm =
+                            (android.os.VibratorManager) getSystemService(VIBRATOR_MANAGER_SERVICE);
+                    if (vm != null) vm.getDefaultVibrator()
+                            .vibrate(android.os.VibrationEffect.createOneShot(ms, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    android.os.Vibrator v = (android.os.Vibrator) getSystemService(VIBRATOR_SERVICE);
+                    if (v != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            v.vibrate(android.os.VibrationEffect.createOneShot(ms, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+                        } else {
+                            v.vibrate(ms);
+                        }
+                    }
+                }
+            } catch (Throwable ignored) { }
+        }
     }
 
     private void hideSystemBars() {

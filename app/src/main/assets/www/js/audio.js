@@ -10,6 +10,7 @@
   let enabled = true;        // 音效
   let musicOn = false;       // 背景音乐开关
   let master = null;
+  let volume = 1.15;
   let sfxBus = null;
   let musicBus = null;
   let musicTimer = null;
@@ -24,7 +25,7 @@
         if (!AC) return null;
         ctx = new AC();
         master = ctx.createGain();
-        master.gain.value = 1;
+        master.gain.value = volume;
         master.connect(ctx.destination);
         sfxBus = ctx.createGain();
         sfxBus.gain.value = 1;
@@ -145,6 +146,8 @@
   }
 
   window.TQAudio = {
+    setVolume: setVolume,
+    getVolume: function () { return volume; },
     unlock: function (opts) {
       ensure();
       if (musicOn && !(opts && opts.noMusic)) startMusic();

@@ -98,26 +98,26 @@
   /* -------------------------------------------------------- 主线 20 关表 */
   // triples = 组数，实际牌数 = triples * 3。牌数单调不减，难度平滑上升。
   const MAIN_LEVELS = [
-    { types: 5, layers: 3, triples: 6, shape: 'pyramid' },  //  1 · 18 张
-    { types: 5, layers: 3, triples: 8, shape: 'pyramid' },  //  2 · 24
-    { types: 6, layers: 3, triples: 10, shape: 'diamond' }, //  3 · 30
-    { types: 6, layers: 4, triples: 12, shape: 'diamond' }, //  4 · 36
-    { types: 6, layers: 4, triples: 14, shape: 'ring' },    //  5 · 42
-    { types: 7, layers: 4, triples: 16, shape: 'ring' },    //  6 · 48
-    { types: 7, layers: 4, triples: 18, shape: 'cross' },   //  7 · 54
-    { types: 7, layers: 5, triples: 20, shape: 'cross' },   //  8 · 60
-    { types: 8, layers: 5, triples: 22, shape: 'pyramid' }, //  9 · 66
-    { types: 8, layers: 5, triples: 24, shape: 'twin' },    // 10 · 72
-    { types: 8, layers: 6, triples: 26, shape: 'twin' },    // 11 · 78
-    { types: 9, layers: 6, triples: 28, shape: 'wave' },    // 12 · 84
-    { types: 9, layers: 6, triples: 30, shape: 'wave' },    // 13 · 90
-    { types: 9, layers: 6, triples: 32, shape: 'pyramid' }, // 14 · 96
-    { types: 10, layers: 6, triples: 34, shape: 'hollow' }, // 15 · 102
-    { types: 10, layers: 7, triples: 36, shape: 'hollow' }, // 16 · 108
-    { types: 10, layers: 7, triples: 38, shape: 'cross' },  // 17 · 114
-    { types: 11, layers: 7, triples: 40, shape: 'twin' },   // 18 · 120
-    { types: 11, layers: 7, triples: 42, shape: 'wave' },   // 19 · 126
-    { types: 12, layers: 8, triples: 44, shape: 'pyramid' } // 20 · 132
+    { types: 6, layers: 3, triples: 8, shape: 'pyramid' }, //  1 · 24 张
+    { types: 6, layers: 3, triples: 11, shape: 'pyramid' }, //  2 · 33 张
+    { types: 7, layers: 4, triples: 13, shape: 'diamond' }, //  3 · 39 张
+    { types: 7, layers: 4, triples: 16, shape: 'diamond' }, //  4 · 48 张
+    { types: 8, layers: 4, triples: 19, shape: 'ring' }, //  5 · 57 张
+    { types: 8, layers: 5, triples: 22, shape: 'cross' }, //  6 · 66 张
+    { types: 9, layers: 5, triples: 25, shape: 'twin' }, //  7 · 75 张
+    { types: 9, layers: 6, triples: 28, shape: 'wave' }, //  8 · 84 张
+    { types: 10, layers: 6, triples: 31, shape: 'hollow' }, //  9 · 93 张
+    { types: 10, layers: 7, triples: 34, shape: 'cross' }, // 10 · 102 张
+    { types: 11, layers: 8, triples: 37, shape: 'pyramid' }, // 11 · 111 张
+    { types: 11, layers: 6, triples: 40, shape: 'wave' }, // 12 · 120 张
+    { types: 12, layers: 6, triples: 42, shape: 'hollow' }, // 13 · 126 张
+    { types: 12, layers: 7, triples: 44, shape: 'cross' }, // 14 · 132 张
+    { types: 13, layers: 8, triples: 46, shape: 'pyramid' }, // 15 · 138 张
+    { types: 13, layers: 6, triples: 48, shape: 'hollow' }, // 16 · 144 张
+    { types: 14, layers: 8, triples: 50, shape: 'cross' }, // 17 · 150 张
+    { types: 14, layers: 8, triples: 54, shape: 'wave' }, // 18 · 162 张
+    { types: 14, layers: 8, triples: 58, shape: 'hollow' }, // 19 · 174 张
+    { types: 14, layers: 8, triples: 62, shape: 'pyramid' } // 20 · 186 张
   ];
 
   /* --------------------------------------------------------------- 工具 */
@@ -217,7 +217,7 @@
       return c;
     }
 
-    let tiles = num('tiles', 15, 132, DEFAULTS.tiles);
+    let tiles = num('tiles', 15, 198, DEFAULTS.tiles);
     if (tiles % 3 !== 0) {
       const fixed = Math.max(15, tiles - (tiles % 3));
       warnings.push('总牌数必须是 3 的倍数，已调整为 ' + fixed);

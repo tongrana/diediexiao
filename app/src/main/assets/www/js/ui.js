@@ -17,7 +17,7 @@
   const LEVEL_COUNT = Levels.mainLevelCount();
 
   const DEFAULT_PROGRESS = { unlocked: 1, levels: {} };
-  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, debug: false };
+  const DEFAULT_SETTINGS = { sfx: true, music: true, haptics: true, motion: true, fontScale: 1, volume: 1.15, debug: false };
   const DEFAULT_STATS = { plays: 0, wins: 0, totalClearMs: 0, bestCombo: 0 };
   const DEFAULT_WALLET = {
     coins: 0,
@@ -399,7 +399,18 @@
       el.dataset.id = String(t.id);
       el.dataset.type = t.type;
       el.innerHTML = '<span class="glyph">' + t.type + '</span>';
-      el.addEventListener('click', onTileClick);
+      // 触摸设备用 pointerdown 立即响应，鼠标仍用 click
+      el.addEventListener('pointerdown', function (ev) {
+        if (ev.pointerType === 'mouse') return;   // 鼠标交给 click
+        if (ev.cancelable) ev.preventDefault();
+        onTileClick(ev);
+        el.dataset.tapped = '1';
+        setTimeout(function () { delete el.dataset.tapped; }, 60);
+      });
+      el.addEventListener('click', function (ev) {
+        if (el.dataset.tapped) return;            // pointerdown 已经处理过
+        onTileClick(ev);
+      });
       if (drop) {
         // 从上方落入：按 (列+行) 排序做波浪式错峰，慢一点、一张张落
         const delay = Math.min(760, (t.col + t.row * 1.5) * 34);
@@ -568,8 +579,6 @@
   function onTileClick(e) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
-    if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
-    if (performance.now() < (S.lockUntil || 0)) return;   // 三消动画期间不接受输入
     const id = Number(e.currentTarget.dataset.id);
     const r = g.click(id);
     if (!r.ok) {
@@ -590,8 +599,7 @@
         renderTrayList(placedEv.tray);
         setTimeout(function () {
           const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
-          S.lockUntil = performance.now() + fxMs + 40;
-          setTimeout(function () { renderTray(); }, fxMs);
+            setTimeout(function () { renderTray(); }, fxMs);
         }, 60);
       } else {
         renderTray();
@@ -908,7 +916,6 @@
   function useProp(name) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
-    if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
     let r;
     if (name === 'undo') r = g.undo();
     else if (name === 'shuffle') r = g.shuffle();
@@ -1136,6 +1143,11 @@
     $('#set-motion').checked = !!S.settings.motion;
     $('#set-debug').checked = !!S.settings.debug;
     $('#set-fontscale').value = String(S.settings.fontScale || 1);
+    if ($('#set-volume')) {
+      const vol = S.settings.volume == null ? 1.15 : S.settings.volume;
+      $('#set-volume').value = String(Math.round(vol * 100));
+      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round(vol * 100) + '%';
+    }
     $('#debug-note').hidden = !S.settings.debug;
   }
 
@@ -1143,6 +1155,11 @@
   function applySettings() {
     A.setEnabled(!!S.settings.sfx);
     if (A.setMusicEnabled) A.setMusicEnabled(!!S.settings.music);
+    if (A.setVolume) A.setVolume(S.settings.volume == null ? 1.15 : S.settings.volume);
+    if ($('#set-volume')) {
+      $('#set-volume').value = String(Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100));
+      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round((S.settings.volume == null ? 1.15 : S.settings.volume) * 100) + '%';
+    }
     app.classList.toggle('reduced-motion', !S.settings.motion);
     $('#set-sfx').checked = !!S.settings.sfx;
     $('#set-music').checked = !!S.settings.music;
@@ -1219,6 +1236,14 @@
 
     $$('.prop').forEach(function (btn) {
       btn.addEventListener('click', function () { useProp(btn.dataset.prop); });
+    });
+
+    if ($('#set-volume')) $('#set-volume').addEventListener('input', function (e) {
+      const v = Number(e.target.value) / 100;
+      S.settings.volume = v;
+      if (A.setVolume) A.setVolume(v);
+      if ($('#set-volume-val')) $('#set-volume-val').textContent = Math.round(v * 100) + '%';
+      P.set('settings', S.settings);
     });
 
     $('#set-sfx').addEventListener('change', function (e) {

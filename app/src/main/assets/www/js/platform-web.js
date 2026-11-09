@@ -53,6 +53,14 @@
 
     vibrate: function (pattern) {
       try {
+        // Android 壳里 navigator.vibrate 可能无效，优先用原生桥
+        if (window.AndroidBridge && window.AndroidBridge.vibrate) {
+          const ms = Array.isArray(pattern)
+            ? pattern.reduce(function (a, b) { return a + b; }, 0)
+            : pattern;
+          window.AndroidBridge.vibrate(ms | 0 || 12);
+          return;
+        }
         if (available && navigator.vibrate) navigator.vibrate(pattern);
       } catch (e) { /* ignore */ }
     },

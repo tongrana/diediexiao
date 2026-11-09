@@ -96,7 +96,8 @@ button, input, select, textarea {
   min-height: 100vh;
   min-height: 100svh;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  /* 底部的系统手势区会吞掉点击，留出至少 16px */
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
 }
 
 .screen {
@@ -186,7 +187,7 @@ button, input, select, textarea {
 .home-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
   margin-top: clamp(2.4rem, 11vh, 5rem);
   padding-bottom: 0.4rem;
 }
@@ -245,8 +246,8 @@ button, input, select, textarea {
   box-shadow: 0 3px 0 var(--accent-dark), 0 10px 22px rgba(43, 132, 98, 0.24);
 }
 
-.btn-lg { font-size: var(--fs-h3); min-height: 3.05em; border-radius: var(--r-lg); }
-.btn-xl { font-size: var(--fs-h3); min-height: 3.4em; border-radius: var(--r-lg); flex-direction: column; gap: 0.1em; padding: 0.5em 1em; }
+.btn-lg { font-size: var(--fs-h3); min-height: 2.7em; border-radius: var(--r-lg); }
+.btn-xl { font-size: var(--fs-h3); min-height: 2.95em; border-radius: var(--r-lg); flex-direction: column; gap: 0.1em; padding: 0.5em 1em; }
 .btn-sm { font-size: var(--fs-cap); min-height: 44px; padding: 0.4em 0.9em; border-radius: var(--r-sm); }
 .btn-ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--ink-2); }
 .btn-note { font-size: var(--fs-cap); font-weight: 500; }
@@ -571,7 +572,8 @@ button, input, select, textarea {
 }
 
 /* 卡槽 */
-.tray-wrap { padding: 0.15rem 0 0.35rem; }
+.tray-wrap {
+  flex: 0 0 auto; padding: 0.15rem 0 0.35rem; }
 
 .tray {
   display: flex;
@@ -621,6 +623,7 @@ button, input, select, textarea {
 
 /* 道具 */
 .props {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.45rem;
@@ -1555,3 +1558,27 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1;
 }
 
+
+
+/* 设置里的音量滑块 */
+.setting-slider { align-items: center; }
+
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 1 12em;
+}
+
+.slider-wrap input[type="range"] {
+  flex: 1;
+  min-width: 6em;
+}
+
+.slider-val {
+  min-width: 3em;
+  text-align: right;
+  font-size: var(--fs-cap);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
