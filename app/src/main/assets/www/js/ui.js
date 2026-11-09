@@ -605,6 +605,17 @@
     const clearedEv = events.filter(function (ev) { return ev.type === 'cleared'; })[0];
     const flew = applyEvents(events, e.currentTarget);
 
+    // 落牌顺序：先让后面的牌「避让」出位置，再让这张牌飞进去归位
+    const landingIdx = (flew && placedEv && placedEv.slot != null) ? placedEv.slot : -1;
+    if (flew && !clearedEv) {
+      renderTray();                       // 立刻重排：其他牌用 FLIP 滑到新位置
+      const slotsNow = $$('#tray .slot');
+      const target = slotsNow[landingIdx];
+      if (target) {
+        target.classList.add('landing');  // 先不显示，等牌落进来
+        setTimeout(function () { target.classList.remove('landing'); }, 236);
+      }
+    } else {
     const showSlot = function () {
       if (clearedEv && placedEv && placedEv.tray) {
         // 先画出「三张都在槽里」的样子，再让它们汇合
@@ -618,7 +629,8 @@
         renderTray();
       }
     };
-    if (flew) setTimeout(showSlot, 236); else showSlot();
+      if (flew) setTimeout(showSlot, 236); else showSlot();
+    }
     updateHUD(true);
     if (g.status === 'won' || g.status === 'lost') finishGame();
   }
@@ -1244,11 +1256,6 @@
 
     $('#btn-pause').addEventListener('click', pauseGame);
     $('#btn-resume').addEventListener('click', resumeGame);
-    $('#btn-pause-settings').addEventListener('click', function () {
-      closeOverlay('ov-pause');
-      S.settingsFrom = 'game';
-      goScreen('settings');
-    });
     $('#btn-restart').addEventListener('click', restartCurrent);
     $('#btn-home').addEventListener('click', function () {
       leaveGame();

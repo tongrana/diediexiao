@@ -10,8 +10,8 @@ android {
         applicationId "com.tq.stack"
         minSdk 23
         targetSdk 34
-        versionCode 7
-        versionName "1.5"
+        versionCode 8
+        versionName "1.6"
     }
 
     // 固定签名：保证每次云端构建的证书一致，新包能直接覆盖安装旧版
