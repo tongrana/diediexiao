@@ -19,17 +19,30 @@ jobs:
       - name: Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: 接受许可并安装 SDK 平台
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
       - name: Gradle 8.5
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.5
 
-      - name: Build APK
+      - name: 定位工程目录
+        id: locate
         run: |
-          if [ -f android/settings.gradle ]; then cd android; fi
-          gradle assembleDebug --no-daemon
+          if [ -f android/settings.gradle ]; then
+            echo "dir=android" >> $GITHUB_OUTPUT
+          else
+            echo "dir=." >> $GITHUB_OUTPUT
+          fi
 
-      - name: Upload APK
+      - name: 构建 Debug APK
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: 上传 APK
         uses: actions/upload-artifact@v4
         with:
           name: diediexiao-apk
