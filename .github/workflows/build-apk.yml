@@ -16,37 +16,25 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: 接受许可并安装 SDK 平台
+      - name: 接受 SDK 许可
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" || true
+          if command -v sdkmanager >/dev/null 2>&1; then
+            yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          fi
 
-      - name: Gradle 8.5
+      - name: 准备 Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.5
 
-      - name: 定位工程目录
-        id: locate
-        run: |
-          if [ -f android/settings.gradle ]; then
-            echo "dir=android" >> $GITHUB_OUTPUT
-          else
-            echo "dir=." >> $GITHUB_OUTPUT
-          fi
-
       - name: 构建 Debug APK
-        working-directory: ${{ steps.locate.outputs.dir }}
         run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
         with:
           name: diediexiao-apk
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            android/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
