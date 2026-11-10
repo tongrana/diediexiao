@@ -405,7 +405,7 @@
       el.className = 'tile';
       el.style.left = (t.x - box.ox) + 'px';
       el.style.top = (t.y - box.oy) + 'px';
-      el.style.zIndex = String(t.layer * 1000 + t.id);
+      el.style.zIndex = String(t.layer * 10000 + Math.round(t.y) * 10 + Math.round(t.x) / 100);
       el.style.setProperty('--d', String(Math.round((t.layer / maxLayer) * 100) / 100));
       el.dataset.id = String(t.id);
       el.dataset.type = t.type;
