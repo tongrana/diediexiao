@@ -570,7 +570,7 @@ button, input, select, textarea {
     0 9px 14px -3px rgba(35, 41, 31, calc(0.18 + var(--d) * 0.1));
 }
 
-.tile.hint { animation: hintPulse 0.65s ease-in-out 3; z-index: 900; }
+.tile.hint { animation: hintPulse 0.65s ease-in-out 3; z-index: 900; outline: 3px solid rgba(43,132,98,.85); outline-offset: -2px; }
 
 .tile.taken {
   pointer-events: none;
@@ -1242,8 +1242,8 @@ input[type="range"]::-moz-range-thumb {
 
 
 @keyframes hintPulse {
-  0%, 100% { box-shadow: var(--shadow-tile); }
-  50% { box-shadow: 0 0 0 3px rgba(224, 168, 60, 0.85), 0 6px 16px rgba(224, 168, 60, 0.4); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
 }
 
 @keyframes floatUp {
@@ -1894,3 +1894,17 @@ input[type="range"]::-moz-range-thumb {
 .hero-tile:active {
   transform: none;
 }
+
+
+/* 牌面外观锁死：无论 hover/active/hint/taken 都保持同一套立体样式 */
+.tile,
+.face,
+.hero-tile,
+.slot-ghost {
+  border-radius: 9px !important;
+  background-image: linear-gradient(180deg, #fffef8 0%, #fdf9ee 62%, #f5eedc 100%) !important;
+}
+
+.tile, .face, .slot-ghost { box-shadow: 0 6px 0 #6f9a3c !important; }
+.hero-tile { box-shadow: 0 8px 0 #6f9a3c !important; }
+.tile.dim { box-shadow: 0 6px 0 #4e6f2a !important; }
