@@ -576,13 +576,8 @@
       const dx = oldX[tid] - slot.getBoundingClientRect().left;
       if (Math.abs(dx) < 2) return;
       const face = slot.firstChild;
-      if (!face || !face.animate) return;
-      try {
-        face.animate([
-          { transform: 'translateX(' + dx + 'px)' },
-          { transform: 'translateX(0)' }
-        ], { duration: 420, easing: 'cubic-bezier(0.34, 1.45, 0.5, 1)' });
-      } catch (e) { /* ignore */ }
+      if (!face) return;
+      slideIn(face, dx, 0, 1, 300);
     });
   }
 
@@ -693,13 +688,23 @@
       const dx = cx - (r.left + r.width / 2);
       const dy = cy - (r.top + r.height / 2);
       slots[i].classList.add('clearing');
-      try {
-        const anim = g.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(0.94)', opacity: 0.35 }
-        ], { duration: 190, delay: i * 26, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' });
-        anim.onfinish = function () { if (g.parentNode) g.remove(); };
-      } catch (e) { g.remove(); }
+      if (g.animate) {
+        try {
+          const anim = g.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(0.94)', opacity: 0.35 }
+          ], { duration: 190, delay: i * 26, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' });
+          anim.onfinish = function () { if (g.parentNode) g.remove(); };
+          return;
+        } catch (e) { /* fall through */ }
+      }
+      // 兜底：CSS transition 版
+      setTimeout(function () {
+        g.style.transition = 'transform 190ms cubic-bezier(0.4,0,0.2,1), opacity 190ms linear';
+        g.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(0.94)';
+        g.style.opacity = '0.35';
+        setTimeout(function () { if (g.parentNode) g.remove(); }, 220);
+      }, i * 26);
     });
 
     // 2) 等三张完全叠成一格、停稳之后再「化光」
@@ -746,6 +751,29 @@
   }
 
   /** 归位动画：让槽位里的面片从牌堆位置「滑」进来——和让位用同一条曲线，纯 transform */
+  /** 从 (dx,dy,scale) 滑到原位：优先 WAAPI，不支持就用 CSS transition（老 WebView） */
+  function slideIn(el, dx, dy, sc, dur, ease) {
+    if (!el) return;
+    const T = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')';
+    if (el.animate) {
+      try {
+        el.animate([
+          { transform: T, opacity: 0.9 },
+          { transform: 'none', opacity: 1 }
+        ], { duration: dur, easing: ease || 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+        return;
+      } catch (e) { /* fall through */ }
+    }
+    el.style.transition = 'none';
+    el.style.transform = T;
+    el.style.opacity = '0.9';
+    void el.offsetWidth;
+    el.style.transition = 'transform ' + dur + 'ms ' + (ease || 'cubic-bezier(0.2,0.8,0.2,1)') + ', opacity ' + dur + 'ms linear';
+    el.style.transform = '';
+    el.style.opacity = '1';
+    setTimeout(function () { el.style.transition = ''; el.style.transform = ''; el.style.opacity = ''; }, dur + 60);
+  }
+
   function landFace(slotEl, rect) {
     if (S.instant || !slotEl || !rect) return false;
     const face = slotEl.firstChild;
@@ -755,12 +783,7 @@
     const dx = (rect.left + rect.width / 2) - (b.left + b.width / 2);
     const dy = (rect.top + rect.height / 2) - (b.top + b.height / 2);
     const sc = Math.max(0.55, Math.min(2.4, rect.width / Math.max(1, b.width)));
-    try {
-      face.animate([
-        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')', opacity: 0.85 },
-        { transform: 'none', opacity: 1 }
-      ], { duration: 300, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
-    } catch (e) { return false; }
+    slideIn(face, dx, dy, sc, 300);
     return true;
   }
 
