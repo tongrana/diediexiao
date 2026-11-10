@@ -665,8 +665,8 @@
           bonus: bonus, combo: state.combo, comboExtra: comboExtra
         });
       } else {
-        // 卡槽溢出判定（满 7 格可继续，第 8 张才失败）
-        if (state.tray.length > cfg.slot) {
+        // 满即失败：放完这张刚好占满且没有消除 → 判负
+        if (state.tray.length >= cfg.slot) {
           state.status = 'lost';
           state.loseReason = 'overflow';
           events.push({ type: 'overflow', tray: state.tray.slice() });

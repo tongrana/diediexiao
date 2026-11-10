@@ -1905,6 +1905,21 @@ input[type="range"]::-moz-range-thumb {
   background-image: linear-gradient(180deg, #fffef8 0%, #fdf9ee 62%, #f5eedc 100%) !important;
 }
 
-.tile, .face, .slot-ghost { box-shadow: 0 6px 0 #6f9a3c !important; }
-.hero-tile { box-shadow: 0 8px 0 #6f9a3c !important; }
-.tile.dim { box-shadow: 0 6px 0 #4e6f2a !important; }
+.tile, .face, .slot-ghost {
+  box-shadow:
+    0 6px 0 #6f9a3c,
+    2px 0 0 #6f9a3c,
+    0 4px 10px -4px rgba(35, 41, 31, 0.22) !important;
+}
+.hero-tile {
+  box-shadow:
+    0 8px 0 #6f9a3c,
+    3px 0 0 #6f9a3c,
+    0 6px 14px -6px rgba(35, 41, 31, 0.28) !important;
+}
+.tile.dim {
+  box-shadow:
+    0 6px 0 #4e6f2a,
+    2px 0 0 #4e6f2a,
+    0 3px 8px -4px rgba(35, 41, 31, 0.16) !important;
+}

@@ -99,26 +99,26 @@
   /* -------------------------------------------------------- 主线 20 关表 */
   // triples = 组数，实际牌数 = triples * 3。牌数单调不减，难度平滑上升。
   const MAIN_LEVELS = [
-    { types: 6, layers: 3, triples: 9, shape: 'pyramid' }, //  1 · 27 张
-    { types: 6, layers: 3, triples: 12, shape: 'pyramid' }, //  2 · 36 张
-    { types: 7, layers: 4, triples: 15, shape: 'diamond' }, //  3 · 45 张
-    { types: 7, layers: 4, triples: 18, shape: 'diamond' }, //  4 · 54 张
-    { types: 8, layers: 4, triples: 21, shape: 'ring' }, //  5 · 63 张
-    { types: 8, layers: 5, triples: 24, shape: 'cross' }, //  6 · 72 张
-    { types: 9, layers: 5, triples: 27, shape: 'twin' }, //  7 · 81 张
-    { types: 9, layers: 6, triples: 30, shape: 'wave' }, //  8 · 90 张
-    { types: 10, layers: 6, triples: 33, shape: 'hollow' }, //  9 · 99 张
-    { types: 10, layers: 7, triples: 36, shape: 'cross' }, // 10 · 108 张
-    { types: 11, layers: 8, triples: 40, shape: 'pyramid' }, // 11 · 120 张
-    { types: 11, layers: 6, triples: 43, shape: 'wave' }, // 12 · 129 张
-    { types: 12, layers: 6, triples: 46, shape: 'hollow' }, // 13 · 138 张
-    { types: 12, layers: 7, triples: 49, shape: 'cross' }, // 14 · 147 张
-    { types: 13, layers: 8, triples: 52, shape: 'pyramid' }, // 15 · 156 张
-    { types: 13, layers: 6, triples: 53, shape: 'hollow' }, // 16 · 150 张
-    { types: 14, layers: 8, triples: 56, shape: 'cross' }, // 17 · 168 张
-    { types: 14, layers: 8, triples: 60, shape: 'wave' }, // 18 · 180 张
-    { types: 14, layers: 8, triples: 62, shape: 'hollow' }, // 19 · 192 张
-    { types: 14, layers: 8, triples: 63, shape: 'pyramid' } // 20 · 198 张
+    { types: 5, layers: 3, triples: 9, shape: 'pyramid' }, //  1 · 27 张
+    { types: 5, layers: 3, triples: 11, shape: 'pyramid' }, //  2 · 33 张
+    { types: 5, layers: 4, triples: 13, shape: 'diamond' }, //  3 · 39 张
+    { types: 6, layers: 4, triples: 15, shape: 'diamond' }, //  4 · 45 张
+    { types: 6, layers: 4, triples: 17, shape: 'ring' }, //  5 · 51 张
+    { types: 6, layers: 5, triples: 19, shape: 'cross' }, //  6 · 57 张
+    { types: 6, layers: 5, triples: 21, shape: 'twin' }, //  7 · 63 张
+    { types: 6, layers: 6, triples: 23, shape: 'wave' }, //  8 · 69 张
+    { types: 6, layers: 6, triples: 25, shape: 'hollow' }, //  9 · 75 张
+    { types: 7, layers: 7, triples: 27, shape: 'cross' }, // 10 · 81 张
+    { types: 7, layers: 8, triples: 29, shape: 'pyramid' }, // 11 · 87 张
+    { types: 7, layers: 6, triples: 31, shape: 'wave' }, // 12 · 93 张
+    { types: 7, layers: 6, triples: 32, shape: 'hollow' }, // 13 · 96 张
+    { types: 7, layers: 7, triples: 33, shape: 'cross' }, // 14 · 99 张
+    { types: 7, layers: 8, triples: 34, shape: 'pyramid' }, // 15 · 102 张
+    { types: 7, layers: 6, triples: 35, shape: 'hollow' }, // 16 · 105 张
+    { types: 7, layers: 8, triples: 36, shape: 'cross' }, // 17 · 108 张
+    { types: 7, layers: 8, triples: 36, shape: 'wave' }, // 18 · 108 张
+    { types: 7, layers: 8, triples: 36, shape: 'hollow' }, // 19 · 108 张
+    { types: 7, layers: 8, triples: 36, shape: 'pyramid' } // 20 · 108 张
   ];
 
   /* --------------------------------------------------------------- 工具 */
@@ -168,7 +168,7 @@
       types: types,
       layers: layers,
       tiles: tiles,
-      slot: 7,
+      slot: 8,
       baseTime: computeBaseTime(tiles, layers, t.timeMul),
       bonusPerClear: t.bonus,
       comboBonus: true,
@@ -188,7 +188,7 @@
     types: 8,
     layers: 5,
     tiles: 60,
-    slot: 7,
+    slot: 8,
     baseTime: 0,          // 0 = 按公式自动
     bonusPerClear: 2.5,
     comboBonus: true,

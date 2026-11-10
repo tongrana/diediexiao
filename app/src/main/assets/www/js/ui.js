@@ -588,7 +588,6 @@
     const g = S.game;
     if (!g || g.status !== 'playing') return;
     if (performance.now() < (S.lockUntil || 0)) return;   // 消除动画期间先别响应
-    if (performance.now() < (S.lockUntil || 0)) return;   // 消除瞬间的防误触
     const id = Number(e.currentTarget.dataset.id);
     const r = g.click(id);
     if (!r.ok) {
@@ -683,9 +682,10 @@
     if (slots.length < 3) return;
 
     const rects = slots.map(function (s) { return s.getBoundingClientRect(); });
-    const base = rects[0];
+    const base = rects[0];                      // 三张里最左边那张＝第一个同款
     const cx = base.left + base.width / 2;
     const cy = base.top + base.height / 2;
+    A.clear(1);                                  // 汇合开始的同时出音效
 
     // 1) 第二、三张滑向第一张的位置，叠在一起
     [1, 2].forEach(function (i) {
@@ -821,7 +821,7 @@
           break;
         }
         case 'cleared':
-          A.clear(ev.combo);
+          // 音效改到汇合动画开始时播（和动画同步）
           floatText('+' + ev.bonus + 's', { dy: -8 });
           if (ev.combo > 1) {
             A.combo(ev.combo);
