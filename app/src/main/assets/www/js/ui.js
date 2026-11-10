@@ -568,8 +568,8 @@
       }
     }
 
-    // 3) FLIP：换格子的牌从左往右滑到位
-    if (S.instant || !S.settings.motion) return;
+    // 3) FLIP：换格子的牌从左往右滑到位（关掉「动画效果」也保留，否则会突然跳位）
+    if (S.instant) return;
     slots.forEach(function (slot) {
       const tid = slot.dataset.tileId;
       if (tid == null || oldX[tid] == null) return;
@@ -677,7 +677,7 @@
 
   /** 三消：后两张并进第一张那一格 → 合并后的那一格化成光点 */
   function playClearFx(type) {
-    if (S.instant || !S.settings.motion) return;
+    if (S.instant) return;
     const slots = $$('#tray .slot').filter(function (s) { return s.dataset.type === type; }).slice(0, 3);
     if (slots.length < 3) return;
 
@@ -747,7 +747,7 @@
 
   /** 归位动画：让槽位里的面片从牌堆位置「滑」进来——和让位用同一条曲线，纯 transform */
   function landFace(slotEl, rect) {
-    if (S.instant || !S.settings.motion || !slotEl || !rect) return false;
+    if (S.instant || !slotEl || !rect) return false;
     const face = slotEl.firstChild;
     if (!face || !face.animate) return false;
     const b = slotEl.getBoundingClientRect();
@@ -773,7 +773,7 @@
           const slots = $$('#tray .slot');
           const slotIndex = (ev.slot != null) ? ev.slot : (ev.tray ? ev.tray.length - 1 : -1);
           const slot = slots[slotIndex];
-          const canAnim = !!(tileEl && slot && !S.instant && S.settings.motion);
+          const canAnim = !!(tileEl && slot && !S.instant);
           if (canAnim) {
             S.pendingLand = { slot: slotIndex, rect: tileEl.getBoundingClientRect() };
             flewAny = true;
@@ -1055,7 +1055,7 @@
       won: won, stars: stars, elapsed: elapsed, isNewBest: isNewBest,
       reason: g.loseReason, coins: coins
     };
-    setTimeout(function () { showResult(); }, won ? 380 : 260);
+    setTimeout(function () { showResult(); }, won ? 900 : 620);
   }
 
   function showResult() {

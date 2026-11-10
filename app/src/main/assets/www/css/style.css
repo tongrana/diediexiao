@@ -9,10 +9,10 @@
  * ==========================================================================*/
 
 :root {
-  --r-btn: 12px;
-  --r-card: 16px;
-  --r-sheet: 22px;
-  --r-tile: 10px;
+  --r-btn: 16px;
+  --r-card: 20px;
+  --r-sheet: 28px;
+  --r-tile: 12px;
   /* 字号体系（--fs 由 js/ui.js 按容器宽度设置） */
   --fs: 19px;
   --fs-display: calc(var(--fs) * 2.6);
@@ -864,9 +864,9 @@ button, input, select, textarea {
   transform: scale(0.85);
 }
 
-.stars i.on { opacity: 1; transform: scale(1); animation: starPop 0.35s ease backwards; }
-.stars i.on:nth-child(2) { animation-delay: 0.12s; }
-.stars i.on:nth-child(3) { animation-delay: 0.24s; }
+.stars i.on { opacity: 1; transform: scale(1); animation: starPop 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards; }
+.stars i.on:nth-child(2) { animation-delay: 0.22s; }
+.stars i.on:nth-child(3) { animation-delay: 0.44s; }
 
 .result-stats {
   display: flex;
