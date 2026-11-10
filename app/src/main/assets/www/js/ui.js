@@ -453,9 +453,8 @@
       const covered = g.isCovered(t.id);
       el.classList.toggle('dim', covered);
       el.classList.toggle('free', present && !covered);
-      // 能点的牌永远画在本层「被压住」的牌之上（否则会出现看着在上层却点不了）
-      const baseZ = t.layer * 10000 + (present && !covered ? 5000 : 0);
-      el.style.zIndex = String(baseZ + Math.round(t.y) * 10 + Math.round(t.x) / 100);
+      // 纯按「层 + 屏幕 Y」排序：同层里靠下的牌盖住上方牌的下侧面
+      el.style.zIndex = String(t.layer * 10000 + Math.round(t.y) * 10 + Math.round(t.x) / 100);
       if (present && el.dataset.type !== t.type) {
         el.dataset.type = t.type;
         const g = el.firstChild;

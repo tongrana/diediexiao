@@ -1866,3 +1866,31 @@ input[type="range"]::-moz-range-thumb {
 
 /* 首页牌侧壁颜色改成与游戏牌一致的绿 */
 .hero-tile { box-shadow: 0 8px 0 #6f9a3c; }
+
+
+/* ── 首页牌与游戏牌彻底统一（同一套白面、同一条绿底边、同圆角） ── */
+.hero-tile,
+.tile,
+.face,
+.slot-ghost {
+  border: 1px solid rgba(35, 41, 31, 0.1);
+  border-radius: 9px;
+  background: linear-gradient(180deg, #fffef8 0%, #fdf9ee 62%, #f5eedc 100%);
+  box-shadow: 0 6px 0 #6f9a3c;
+}
+
+.hero-tile { box-shadow: 0 8px 0 #6f9a3c; }
+
+/* 被压住的牌：整张压暗，一眼能看出「点不了」 */
+.tile.dim {
+  background: linear-gradient(180deg, #cfc8b4 0%, #c6bea8 62%, #b8ae95 100%);
+  border-color: rgba(35, 41, 31, 0.18);
+  box-shadow: 0 6px 0 #4e6f2a;
+}
+
+/* 点击不要改变形状（之前会 scale 一下，看着像变回旧样式） */
+.tile:active,
+.tile.free:active,
+.hero-tile:active {
+  transform: none;
+}
