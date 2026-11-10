@@ -577,7 +577,7 @@
       if (Math.abs(dx) < 2) return;
       const face = slot.firstChild;
       if (!face) return;
-      slideIn(face, dx, 0, 1, 300);
+      slideIn(face, dx, 0, 1, 320, 'cubic-bezier(0.34, 1.42, 0.5, 1)');
     });
   }
 
@@ -786,7 +786,7 @@
     if (!b.width) return false;
     const dx = (rect.left + rect.width / 2) - (b.left + b.width / 2);
     const dy = (rect.top + rect.height / 2) - (b.top + b.height / 2);
-    slideIn(face, dx, dy, 1, 300);   // 与让位一致：只位移、同时长同曲线
+    slideIn(face, dx, dy, 1, 320, 'cubic-bezier(0.34, 1.42, 0.5, 1)');  // 与让位同款，带轻微回弹
     return true;
   }
 
