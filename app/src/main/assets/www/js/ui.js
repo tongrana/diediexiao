@@ -605,34 +605,34 @@
     const clearedEv = events.filter(function (ev) { return ev.type === 'cleared'; })[0];
     const flew = applyEvents(events, e.currentTarget);
 
-    // 落牌顺序：先让后面的牌「避让」出位置，再让这张牌飞进去归位
+    // 落牌：先让位 → 牌落进空格 → （如果凑齐三张）再化成光
     const landingIdx = (flew && placedEv && placedEv.slot != null) ? placedEv.slot : -1;
-    if (flew && !clearedEv) {
-      const pend = S.pendingLand;
-      renderTray();                       // 第一步：其他牌先滑开让位（FLIP）
+    const pend = S.pendingLand;
+    if (flew) {
+      renderTray();                        // 第一步：其他牌滑开让位
       const slotsNow = $$('#tray .slot');
       const target = slotsNow[landingIdx];
       if (target && pend && pend.rect) {
-        target.classList.add('landing');  // 先空着（虚线框保留）
-        landFace(target, pend.rect);      // 第二步：面片从牌堆位置滑进来
+        target.classList.add('landing');
+        landFace(target, pend.rect);       // 第二步：这张牌滑进空格（第三张也有）
         setTimeout(function () { target.classList.remove('landing'); }, 300);
       }
       S.pendingLand = null;
-    } else {
-    const showSlot = function () {
-      if (clearedEv && placedEv && placedEv.tray) {
-        // 先画出「三张都在槽里」的样子，再让它们汇合
-        renderTrayList(placedEv.tray);
-        S.lockUntil = performance.now() + 220;
+      if (clearedEv) {
+        // 第三步：等牌完全落位，再播三消汇合动画
         setTimeout(function () {
           const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
-            setTimeout(function () { renderTray(); }, fxMs);
-        }, 60);
-      } else {
-        renderTray();
+          setTimeout(function () { renderTray(); }, fxMs);
+        }, 330);
       }
-    };
-      if (flew) setTimeout(showSlot, 236); else showSlot();
+    } else if (clearedEv) {
+      renderTrayList(placedEv.tray);
+      setTimeout(function () {
+        const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
+        setTimeout(function () { renderTray(); }, fxMs);
+      }, 60);
+    } else {
+      renderTray();
     }
     updateHUD(true);
     if (g.status === 'won' || g.status === 'lost') finishGame();
