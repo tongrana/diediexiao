@@ -1848,3 +1848,21 @@ input[type="range"]::-moz-range-thumb {
 
 /* 描边淡一点，避免像「描了一圈深色边」 */
 .tile, .face, .slot-ghost { border-color: rgba(35, 41, 31, 0.1); }
+
+
+/* 长按时不要触发系统选择/放大镜/变形 */
+.tile,
+.face,
+.slot-ghost,
+.hero-tile,
+.prop {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.tile, .hero-tile, .prop { -webkit-tap-highlight-color: transparent; }
+
+/* 首页牌侧壁颜色改成与游戏牌一致的绿 */
+.hero-tile { box-shadow: 0 8px 0 #6f9a3c; }
