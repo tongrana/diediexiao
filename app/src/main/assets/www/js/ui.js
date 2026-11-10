@@ -612,7 +612,7 @@
       if (target && pend && pend.rect) {
         target.classList.add('landing');
         landFace(target, pend.rect);       // 第二步：这张牌滑进空格（第三张也有）
-        setTimeout(function () { target.classList.remove('landing'); }, 300);
+        setTimeout(function () { target.classList.remove('landing'); }, 260);
       }
       S.pendingLand = null;
       if (clearedEv) {
@@ -620,7 +620,7 @@
         setTimeout(function () {
           const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
           setTimeout(function () { renderTray(); }, fxMs);
-        }, 330);
+        }, 300);
       }
     } else if (clearedEv) {
       renderTrayList(placedEv.tray);
@@ -785,7 +785,7 @@
     const dx = (rect.left + rect.width / 2) - (b.left + b.width / 2);
     const dy = (rect.top + rect.height / 2) - (b.top + b.height / 2);
     const sc = Math.max(0.55, Math.min(2.4, rect.width / Math.max(1, b.width)));
-    slideIn(face, dx, dy, sc, 300);
+    slideIn(face, dx, dy, sc, 260);
     return true;
   }
 
@@ -838,7 +838,7 @@
           haptic([20, 60, 20]);
           break;
         case 'win':
-          A.win();
+          // 音效改到结算面板弹出时播，和星星动画同步
           break;
         default:
           break;
@@ -1155,6 +1155,8 @@
     if (acts) acts.classList.toggle('is-win', !!r.won);
 
     openOverlay('ov-result');
+    // 星星动画从第 1 颗开始的同时响起通关/失败音乐
+    if (r.won) A.win(); else A.lose();
   }
 
   function restartCurrent() {

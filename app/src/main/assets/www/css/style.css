@@ -854,7 +854,7 @@ button, input, select, textarea {
   gap: 0.35rem;
   margin: 0.35rem 0 0.2rem;
   font-size: var(--fs-h1);
-  color: var(--gold);
+  color: #f4b322;
   line-height: 1;
 }
 
@@ -864,7 +864,13 @@ button, input, select, textarea {
   transform: scale(0.85);
 }
 
-.stars i.on { opacity: 1; transform: scale(1); animation: starPop 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards; }
+.stars i.on {
+  opacity: 1;
+  transform: scale(1);
+  color: #f7bb1f;
+  text-shadow: 0 1px 0 #c98a12, 0 0 12px rgba(247, 187, 31, 0.45);
+  animation: starPop 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+}
 .stars i.on:nth-child(2) { animation-delay: 0.22s; }
 .stars i.on:nth-child(3) { animation-delay: 0.44s; }
 
