@@ -604,7 +604,9 @@
     const landingIdx = (flew && placedEv && placedEv.slot != null) ? placedEv.slot : -1;
     const pend = S.pendingLand;
     if (flew) {
-      renderTray();                        // 第一步：其他牌滑开让位
+      // 三消时 state.tray 已经清空，必须先画「消除前」的快照，否则第三张不会出现
+      if (clearedEv && placedEv && placedEv.tray) renderTrayList(placedEv.tray);
+      else renderTray();                   // 第一步：其他牌滑开让位
       const slotsNow = $$('#tray .slot');
       const target = slotsNow[landingIdx];
       if (target && pend && pend.rect) {
