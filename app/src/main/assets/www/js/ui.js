@@ -585,6 +585,7 @@
   function onTileClick(e) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
+    if (performance.now() < (S.lockUntil || 0)) return;   // 消除动画期间先别响应
     if (performance.now() < (S.lockUntil || 0)) return;   // 消除瞬间的防误触
     const id = Number(e.currentTarget.dataset.id);
     const r = g.click(id);
@@ -616,7 +617,8 @@
       }
       S.pendingLand = null;
       if (clearedEv) {
-        // 第三步：等牌完全落位，再播三消汇合动画
+        // 第三步：等牌完全落位，再播三消汇合动画；期间锁输入，避免动画被打断
+        S.lockUntil = performance.now() + 300 + 380;
         setTimeout(function () {
           const fxMs = playClearFx(g.tiles[clearedEv.tiles[0]].type) || 300;
           setTimeout(function () { renderTray(); }, fxMs);
@@ -784,8 +786,7 @@
     if (!b.width) return false;
     const dx = (rect.left + rect.width / 2) - (b.left + b.width / 2);
     const dy = (rect.top + rect.height / 2) - (b.top + b.height / 2);
-    const sc = Math.max(0.55, Math.min(2.4, rect.width / Math.max(1, b.width)));
-    slideIn(face, dx, dy, sc, 260);
+    slideIn(face, dx, dy, 1, 300);   // 与让位一致：只位移、同时长同曲线
     return true;
   }
 
@@ -969,6 +970,7 @@
   function useProp(name) {
     const g = S.game;
     if (!g || g.status !== 'playing') return;
+    if (performance.now() < (S.lockUntil || 0)) return;   // 消除动画期间先别响应
     let r;
     if (name === 'undo') r = g.undo();
     else if (name === 'shuffle') r = g.shuffle();
@@ -1156,7 +1158,7 @@
 
     openOverlay('ov-result');
     // 星星动画从第 1 颗开始的同时响起通关/失败音乐
-    if (r.won) A.win(); else A.lose();
+    if (r.won) A.win(r.stars); else A.lose();
   }
 
   function restartCurrent() {

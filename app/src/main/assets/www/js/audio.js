@@ -218,11 +218,26 @@
       tone({ freq: 1568, dur: 0.12, type: 'sine', gain: 0.07, delay: 0.06 });
     },
 
-    win: function () {
-      const notes = [523.25, 659.25, 783.99, 1046.5];
-      notes.forEach(function (f, i) {
-        tone({ freq: f, dur: 0.22, type: 'sine', gain: 0.11, delay: i * 0.09 });
-      });
+    /** 通关音乐：按星数变奏，总时长和星星逐颗弹出对齐（3★ 约 1.25s） */
+    win: function (stars) {
+      const n = Math.max(1, Math.min(3, stars || 3));
+      if (n >= 3) {
+        // 三颗星：每颗星落地时响一个音，最后收一个长尾
+        [523.25, 659.25, 783.99].forEach(function (f, i) {
+          tone({ freq: f, dur: 0.26, type: 'sine', gain: 0.11, delay: i * 0.22 });
+          tone({ freq: f * 2, dur: 0.18, type: 'triangle', gain: 0.05, delay: i * 0.22 });
+        });
+        tone({ freq: 1046.5, dur: 0.42, type: 'sine', gain: 0.1, delay: 0.66 });
+      } else if (n === 2) {
+        // 两颗星：换一个更短的动机
+        [587.33, 880].forEach(function (f, i) {
+          tone({ freq: f, dur: 0.24, type: 'sine', gain: 0.1, delay: i * 0.22 });
+        });
+        tone({ freq: 1174.66, dur: 0.3, type: 'triangle', gain: 0.07, delay: 0.44 });
+      } else {
+        tone({ freq: 523.25, dur: 0.3, type: 'sine', gain: 0.1 });
+        tone({ freq: 783.99, dur: 0.3, type: 'sine', gain: 0.08, delay: 0.18 });
+      }
     },
 
     lose: function () {
