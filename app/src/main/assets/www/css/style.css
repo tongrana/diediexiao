@@ -132,7 +132,7 @@ button, input, select, textarea {
 .hero-tile {
   --body: #cfe0c0;
   border: 1px solid rgba(35, 41, 31, 0.16);
-  box-shadow: inset 0 -8px 0 #9dc26e;
+  box-shadow: 0 8px 0 #9dc26e;
   position: absolute;
   display: grid;
   place-items: center;
@@ -530,7 +530,7 @@ button, input, select, textarea {
   --face-b: #d3cbb6;
   border-color: rgba(35, 41, 31, 0.16);
   background: linear-gradient(180deg, #ddd6c2 0%, #d6ceb8 62%, #c9c0a6 100%);
-  box-shadow: inset 0 -6px 0 #55792f;
+  box-shadow: 0 6px 0 #55792f;
 }
 
 /* 能点的牌：亮一档 */
@@ -1569,7 +1569,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(35, 41, 31, 0.16);
   border-radius: 9px;
   background: linear-gradient(180deg, #fffef8 0%, #fdf9ee 62%, #f5eedc 100%);
-  box-shadow: inset 0 -6px 0 #6f9a3c;
+  box-shadow: 0 6px 0 #6f9a3c;
   line-height: 1;
 }
 
@@ -1782,7 +1782,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(35, 41, 31, 0.16);
   border-radius: 9px;
   background: linear-gradient(180deg, #fffef8 0%, #fdf9ee 62%, #f5eedc 100%);
-  box-shadow: inset 0 -6px 0 #6f9a3c;
+  box-shadow: 0 6px 0 #6f9a3c;
 }
 
 /* ── 结算面板整体居中 ── */
@@ -1841,10 +1841,10 @@ input[type="range"]::-moz-range-thumb {
 .tile,
 .face,
 .slot-ghost {
-  padding-bottom: 6px;
+  padding-bottom: 0;
 }
 
-.hero-tile { padding-bottom: 8px; }
+.hero-tile { padding-bottom: 0; }
 
 /* 描边淡一点，避免像「描了一圈深色边」 */
 .tile, .face, .slot-ghost { border-color: rgba(35, 41, 31, 0.1); }
